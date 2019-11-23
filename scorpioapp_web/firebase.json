@@ -1,0 +1,27 @@
+{
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "redirects":[
+      {
+        "source":"/sid=:idserver*",
+        "destination":"/index.html?sid=:idserver",
+        "type":301
+      },{
+        "source":"/join/:idserver*",
+        "destination":"/index.html?sid=:idserver",
+        "type":301
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

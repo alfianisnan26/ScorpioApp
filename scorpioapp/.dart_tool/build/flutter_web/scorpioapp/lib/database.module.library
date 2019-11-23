@@ -1,0 +1,1 @@
+{"isEntrypoint":true,"deps":["hex|lib/hex.dart","flutter|lib/material.dart","flutter|lib/services.dart","http|lib/http.dart","scorpioapp|lib/main.dart"],"parts":[],"conditionalDeps":[],"sdkDeps":["async","convert","math","html"],"hasMain":false}
