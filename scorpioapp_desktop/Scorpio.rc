@@ -1,0 +1,621 @@
+// Microsoft Visual C++ generated resource script.
+//
+#pragma code_page(65001)
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_SCORPIO MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        POPUP "Se&quence"
+        BEGIN
+            MENUITEM "&New",                        ID_SEQUENCE_NEW
+            MENUITEM "&Open",                       ID_SEQUENCE_OPEN
+            MENUITEM "&Save",                       ID_SEQUENCE_SAVE
+            MENUITEM "Save &As",                    ID_SEQUENCE_SAVEAS
+        END
+        MENUITEM "&Create Server",              ID_FILE_CREATESERVER
+        MENUITEM "&Reset Server",               ID_FILE_RESET
+        MENUITEM "Cl&ose Server",               ID_FILE_CLOSESERVER
+        MENUITEM "E&xit",                       IDM_EXIT
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Sequencer Editor",           ID_SEQED
+        MENUITEM "&Constellation Editor",       ID_CONSTED
+        POPUP "Server ID"
+        BEGIN
+            MENUITEM "Text",                        ID_SERVERID_TEXT
+            MENUITEM "QR Code",                     ID_SERVERID_QRCODE
+        END
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About",                      IDM_ABOUT
+        MENUITEM "&Tutorial",                   ID_HELP_TUTORIAL
+        MENUITEM "&Website",                    ID_DCLIENT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_SCORPIO ACCELERATORS
+BEGIN
+    "?",            IDM_ABOUT,              ASCII,  ALT
+    "/",            IDM_ABOUT,              ASCII,  ALT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 325, 215
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Scorpio"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,0,0,325,215
+END
+
+IDD_FORMVIEW DIALOGEX 0, 0, 342, 135
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_VISIBLE | WS_BORDER
+EXSTYLE WS_EX_NOPARENTNOTIFY
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    CTEXT           "Welcome To Scorp.io",IDC_STATIC,7,7,328,8
+    DEFPUSHBUTTON   "Create Server",IDC_SERVER,35,30,98,32
+    PUSHBUTTON      "Create Sequence",IDC_SEQ,203,30,98,32
+    CTEXT           "The server connects clients to join new constellations. You can create a new server on the menu File - Server.",IDC_STATIC,31,78,107,31
+    CTEXT           "Create a New Sequence for your constellation, then you can save it for you to use at any time. You can make it without having to create a server first.",IDC_STATIC,199,78,107,42
+    CONTROL         IDB_BITMAP5,IDC_STATIC,"Static",SS_BITMAP,15,41,11,10
+    CONTROL         IDB_BITMAP10,IDC_STATIC,"Static",SS_BITMAP,309,41,11,10
+END
+
+IDD_CREATE_SERVER DIALOGEX 0, 0, 223, 144
+STYLE DS_SYSMODAL | DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_VISIBLE | WS_CAPTION
+CAPTION "Create Server"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "Create",IDC_BUTTON1,145,123,50,14
+    PUSHBUTTON      "Cancel",IDC_BUTTON2,28,123,50,14
+    COMBOBOX        IDC_COMBO2,94,64,101,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT3,94,45,101,14,ES_AUTOHSCROLL
+    LTEXT           "Server Name :",IDC_STATIC,28,48,47,8
+    LTEXT           "Constellation Type :",IDC_STATIC,28,66,65,8
+    EDITTEXT        IDC_EDIT4,94,82,39,14,ES_AUTOHSCROLL
+    LTEXT           "Maximum Client :",IDC_STATIC,28,85,55,8
+    LTEXT           "Create Server of Constellation",IDC_STATIC,28,15,98,8
+    LTEXT           "( 0 - Unlimited )",IDC_STATIC,145,85,50,8
+END
+
+IDD_CONSTELLATION DIALOGEX 0, 0, 399, 271
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION | WS_THICKFRAME
+CAPTION "Constellation Editor"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    PUSHBUTTON      "Close",IDC_BUTTON1,342,250,50,14
+    EDITTEXT        IDC_EDIT1,7,7,385,229,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "Start",IDC_START,7,250,107,14
+    PUSHBUTTON      "Free User(s)",IDC_FREE,124,250,84,14
+    PUSHBUTTON      "Set Color",IDC_COLOR,219,250,50,14
+END
+
+IDD_SEQUENCER DIALOGEX 0, 0, 359, 271
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_CAPTION | WS_THICKFRAME
+CAPTION "Sequence Editor"
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LISTBOX         IDC_LIST,7,7,234,257,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_TABSTOP
+    DEFPUSHBUTTON   "Add Command",IDC_ADD,256,7,92,14
+    PUSHBUTTON      "Edit Command",IDC_EDIT,256,28,92,14
+    PUSHBUTTON      "Delete Command",IDC_DELETE,256,49,92,14
+    PUSHBUTTON      "Clear All Command",IDC_CLEAR,256,95,92,14
+    PUSHBUTTON      "New",IDC_NEW,303,210,45,14
+    PUSHBUTTON      "Close",IDC_CLOSE,303,250,45,14
+    PUSHBUTTON      "Save",IDC_SAVE,303,230,45,14
+    CONTROL         "",IDC_SPIN,"msctls_updown32",UDS_ARROWKEYS,256,211,27,53
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+    END
+
+    IDD_FORMVIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 335
+        VERTGUIDE, 84
+        VERTGUIDE, 168
+        VERTGUIDE, 252
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 128
+        HORZGUIDE, 30
+        HORZGUIDE, 46
+        HORZGUIDE, 78
+    END
+
+    IDD_CREATE_SERVER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 216
+        VERTGUIDE, 28
+        VERTGUIDE, 94
+        VERTGUIDE, 133
+        VERTGUIDE, 172
+        VERTGUIDE, 195
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 137
+        HORZGUIDE, 52
+        HORZGUIDE, 70
+        HORZGUIDE, 89
+    END
+
+    IDD_CONSTELLATION, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 392
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 264
+    END
+
+    IDD_SEQUENCER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 352
+        VERTGUIDE, 256
+        VERTGUIDE, 348
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 264
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_APP_TITLE           "Scorpio"
+    IDC_SCORPIO             "SCORPIO"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Indonesian (Indonesia) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_IND)
+LANGUAGE LANG_INDONESIAN, SUBLANG_DEFAULT
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_LOADING DIALOGEX 0, 0, 131, 32
+STYLE DS_ABSALIGN | DS_SYSMODAL | DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION
+EXSTYLE WS_EX_TOPMOST
+CAPTION "Loading..."
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CTEXT           "Connecting to Internet to Register New Server ID",IDC_STATIC,7,7,117,18
+END
+
+IDD_SETTING DIALOGEX 0, 0, 199, 88
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_CAPTION
+CAPTION "Setting"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Save",IDOK,142,67,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,87,67,50,14
+    CONTROL         "",IDC_SLIDER1,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,82,10,65,15
+    LTEXT           "Client Refresh Rate",IDC_STATIC,14,13,64,8
+    CONTROL         "Splash Screen",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,31,61,10
+    EDITTEXT        IDC_EDIT2,151,10,26,14,ES_AUTOHSCROLL
+    CONTROL         "Auto create server when opening the apps",IDC_CHECK2,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,51,153,10
+    LTEXT           "ms",IDC_STATIC,180,13,10,8
+END
+
+IDD_ADD_CMD_PARENT DIALOGEX 0, 0, 265, 237
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+EXSTYLE WS_EX_ACCEPTFILES
+CAPTION "Add Command"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Ok",IDC_OK,203,7,50,14
+    PUSHBUTTON      "Cancel",IDC_CANCEL,145,7,50,14
+    COMBOBOX        IDC_COMBO2,37,7,98,118,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Type : ",IDC_STATIC,7,9,24,8
+END
+
+IDD_ADD_CMD_LOOP DIALOGEX 0, 22, 261, 210
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT3,72,28,90,14,ES_AUTOHSCROLL
+    LTEXT           "Loop ID :",IDC_STATIC,20,31,30,8
+    LTEXT           "Count : ",IDC_STATIC,20,50,27,8
+    EDITTEXT        IDC_EDIT5,72,47,90,14,ES_AUTOHSCROLL
+    GROUPBOX        "Loop",IDC_STATIC,7,7,247,196
+    LTEXT           "(randomized)",IDC_STATIC,173,31,43,8
+END
+
+IDD_ADD_CMD_DELAY DIALOGEX 0, 22, 261, 210
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT3,72,28,44,14,ES_AUTOHSCROLL
+    LTEXT           "Delay : ",-1,20,31,26,8
+    GROUPBOX        "Delay",-1,7,7,247,196
+    COMBOBOX        IDC_COMBO1,126,29,36,79,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_ADD_CMD_FLASH DIALOGEX 0, 22, 261, 210
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Formation : ",-1,20,21,40,8
+    GROUPBOX        "Flashlight",-1,7,7,247,196
+    LTEXT           "Transition : ",-1,20,40,39,8
+    LTEXT           "Duration : ",-1,157,40,35,8
+    COMBOBOX        IDC_COMBO1,72,19,77,315,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO3,72,38,77,231,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO4,220,38,27,94,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT1,193,38,24,13,ES_AUTOHSCROLL
+END
+
+IDD_TRANS_SPLIT DIALOGEX 10, 135, 214, 67
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_COMBO1,63,22,85,130,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Direction : ",IDC_STATIC,19,24,36,8
+    GROUPBOX        "Transition Properties",IDC_STATIC,7,7,200,53
+END
+
+IDD_ADD_CMD_SCREEN DIALOGEX 0, 22, 261, 210
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Set Colors",IDC_STATIC,20,43,34,8
+    GROUPBOX        "Screen Color",IDC_STATIC,7,7,247,196
+    LTEXT           "Transition : ",IDC_STATIC,20,61,39,8
+    LTEXT           "Duration : ",IDC_SEQ,158,61,35,8
+    COMBOBOX        IDC_COMBO1,63,22,85,142,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO3,63,59,85,116,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO4,219,59,27,100,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT1,194,59,24,13,ES_AUTOHSCROLL
+    LTEXT           "Formation : ",IDC_SLIDER1,20,24,40,8
+    EDITTEXT        IDC_EDIT2,63,40,85,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Color Picker",IDC_COLORS,157,40,89,14
+END
+
+IDD_TRANS_WIPE DIALOGEX 10, 135, 214, 67
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_COMBO1,63,22,85,155,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO3,63,37,85,101,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Orientation : ",IDC_STATIC,19,39,44,8
+    LTEXT           "Direction : ",IDC_STATIC,19,24,36,8,0,WS_EX_TRANSPARENT
+    GROUPBOX        "Transition Properties",IDC_STATIC,7,7,200,53
+END
+
+IDD_FORM_BARS DIALOGEX 10, 75, 214, 67
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Source File : ",IDC_STATIC,20,20,42,8
+    CONTROL         "(none)",IDC_NAME,"Static",SS_LEFTNOWORDWRAP | SS_WORDELLIPSIS | WS_GROUP,20,39,178,8
+    PUSHBUTTON      "Select Bitmap",IDC_OPEN,133,17,65,14
+    GROUPBOX        "Formation Properties",IDC_STATIC,7,7,200,53
+END
+
+IDD_FORM_IMAGE DIALOGEX 10, 75, 214, 67
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_COMBO1,63,21,85,132,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Orientation : ",IDC_STATIC,19,23,44,8
+    GROUPBOX        "Formation Properties",IDC_STATIC,7,7,200,53
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_LOADING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 124
+        VERTGUIDE, 105
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 25
+    END
+
+    IDD_SETTING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 192
+        VERTGUIDE, 14
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 81
+        HORZGUIDE, 17
+        HORZGUIDE, 36
+        HORZGUIDE, 56
+        HORZGUIDE, 70
+    END
+
+    IDD_ADD_CMD_PARENT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 258
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 230
+        HORZGUIDE, 13
+        HORZGUIDE, 22
+    END
+
+    IDD_ADD_CMD_LOOP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 254
+        VERTGUIDE, 20
+        VERTGUIDE, 72
+        VERTGUIDE, 162
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 203
+        HORZGUIDE, 35
+        HORZGUIDE, 54
+        HORZGUIDE, 72
+        HORZGUIDE, 90
+        HORZGUIDE, 108
+        HORZGUIDE, 203
+    END
+
+    IDD_ADD_CMD_DELAY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 254
+        VERTGUIDE, 20
+        VERTGUIDE, 72
+        VERTGUIDE, 162
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 203
+        HORZGUIDE, 35
+        HORZGUIDE, 54
+        HORZGUIDE, 72
+        HORZGUIDE, 90
+        HORZGUIDE, 108
+    END
+
+    IDD_ADD_CMD_FLASH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 254
+        VERTGUIDE, 20
+        VERTGUIDE, 72
+        VERTGUIDE, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 203
+        HORZGUIDE, 35
+        HORZGUIDE, 54
+        HORZGUIDE, 72
+        HORZGUIDE, 90
+        HORZGUIDE, 108
+    END
+
+    IDD_TRANS_SPLIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        VERTGUIDE, 20
+        VERTGUIDE, 63
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 60
+        HORZGUIDE, 12
+        HORZGUIDE, 28
+    END
+
+    IDD_ADD_CMD_SCREEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 254
+        VERTGUIDE, 20
+        VERTGUIDE, 63
+        VERTGUIDE, 148
+        VERTGUIDE, 157
+        VERTGUIDE, 245
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 203
+        HORZGUIDE, 35
+        HORZGUIDE, 54
+        HORZGUIDE, 72
+        HORZGUIDE, 88
+        HORZGUIDE, 108
+    END
+
+    IDD_TRANS_WIPE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        VERTGUIDE, 20
+        VERTGUIDE, 63
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 60
+        HORZGUIDE, 12
+        HORZGUIDE, 28
+        HORZGUIDE, 43
+    END
+
+    IDD_FORM_BARS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        VERTGUIDE, 20
+        VERTGUIDE, 63
+        VERTGUIDE, 148
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 60
+        HORZGUIDE, 24
+    END
+
+    IDD_FORM_IMAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        VERTGUIDE, 20
+        VERTGUIDE, 63
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 60
+        HORZGUIDE, 12
+        HORZGUIDE, 27
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "bmp\\Scorpio.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP                  "bmp\\about.bmp"
+
+IDB_BITMAP2             BITMAP                  "bmp\\welcome.bmp"
+
+IDB_BITMAP3             BITMAP                  "bmp\\bitmap3.bmp"
+
+IDB_BITMAP4             BITMAP                  "bmp\\bitmap4.bmp"
+
+IDB_BITMAP5             BITMAP                  "bmp\\bitmap5.bmp"
+
+IDB_BITMAP6             BITMAP                  "bmp\\bitmap6.bmp"
+
+IDB_BITMAP7             BITMAP                  "bmp\\bitmap7.bmp"
+
+IDB_BITMAP8             BITMAP                  "bmp\\bitmap8.bmp"
+
+IDB_BITMAP9             BITMAP                  "bmp\\bitmap9.bmp"
+
+IDB_BITMAP10            BITMAP                  "bmp\\bitmap10.bmp"
+
+IDB_BITMAP11            BITMAP                  "bmp\\bitmap11.bmp"
+
+IDB_BITMAP12            BITMAP                  "bmp\\bitmap12.bmp"
+
+IDB_BITMAP13            BITMAP                  "bmp\\bitmap13.bmp"
+
+ID_QR                   BITMAP                  "bmp\\bitmap14.bmp"
+
+IDB_BITMAP14            BITMAP                  "bmp\\bmp00001.bmp"
+
+#endif    // Indonesian (Indonesia) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

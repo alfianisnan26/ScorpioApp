@@ -1,0 +1,125 @@
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
+// Used by Scorpio.rc
+//
+#define VER_VER_DEBUG                   0
+#define IDC_MYICON                      2
+#define MAJOR_VERSION                   2
+#define BUILD_INCREMENT                 10
+#define MINOR_VERSION                   26
+#define BUILD_DATE                      27
+#define IDD_FORMVIEW                    101
+#define IDD_SCORPIO_DIALOG              102
+#define IDS_APP_TITLE                   103
+#define IDD_ABOUTBOX                    103
+#define IDM_ABOUT                       104
+#define IDM_EXIT                        105
+#define IDC_SCORPIO                     109
+#define IDR_MAINFRAME                   128
+#define IDI_ICON1                       138
+#define IDB_BITMAP1                     139
+#define IDB_BITMAP2                     140
+#define IDB_BITMAP3                     150
+#define IDB_BITMAP4                     151
+#define IDB_BITMAP5                     152
+#define IDB_BITMAP6                     153
+#define IDB_BITMAP7                     154
+#define IDB_BITMAP8                     155
+#define IDB_BITMAP9                     156
+#define IDB_BITMAP10                    157
+#define IDB_BITMAP11                    158
+#define IDB_BITMAP12                    159
+#define IDB_BITMAP13                    160
+#define ID_QR                           161
+#define IDB_BITMAP14                    162
+#define IDD_LOADING                     164
+#define IDD_FORMVIEW1                   165
+#define IDD_CREATE_SERVER               165
+#define IDD_SETTING                     166
+#define IDD_CONSTELLATION               167
+#define IDD_SEQUENCER                   168
+#define IDD_ADD_CMD_PARENT              169
+#define IDD_ADD_CMD_LOOP                170
+#define IDD_ADD_CMD_DELAY               171
+#define IDD_ADD_CMD_FLASH               172
+#define IDD_TRANS_SPLIT                 173
+#define IDD_ADD_CMD_SCREEN              174
+#define IDD_TRANS_WIPE                  175
+#define IDD_FORM_BARS                   176
+#define IDD_FORM_IMAGE                  177
+#define IDC_SERVER                      1005
+#define IDC_SEQ                         1006
+#define IDC_BUTTON1                     1011
+#define IDC_BUTTON2                     1012
+#define IDC_CANCEL                      1013
+#define IDC_DELETE                      1014
+#define IDC_CLEAR                       1015
+#define IDC_NEW                         1017
+#define IDC_CLOSE                       1018
+#define IDC_COMBO2                      1019
+#define IDC_SAVE                        1019
+#define IDC_EDIT3                       1022
+#define IDC_EDIT5                       1023
+#define IDC_EDIT4                       1026
+#define IDC_SLIDER1                     1031
+#define IDC_CHECK1                      1033
+#define IDC_EDIT2                       1034
+#define IDC_CHECK2                      1036
+#define IDC_EDIT1                       1046
+#define IDC_LIST                        1063
+#define IDC_SPIN                        1064
+#define IDC_COMBO1                      1069
+#define IDC_COMBO3                      1070
+#define IDC_COMBO4                      1071
+#define IDC_EDIT                        1072
+#define IDC_ADD                         1073
+#define IDC_OK                          1074
+#define IDC_COLORS                      1075
+#define IDC_OPEN                        1076
+#define IDC_NAME                        1077
+#define IDC_START                       1078
+#define IDC_FREE                        1079
+#define IDC_COLOR                       1080
+#define ID_HELP_DOWNLOADCLIENT          32771
+#define ID_FILE_OPENSEQUENCE            32772
+#define ID_FILE_EXIT                    32773
+#define IDM_CSERV                       32774
+#define ID_DCLIENT                      32775
+#define ID_SEQUENCER_OPEN               32776
+#define ID_Menu                         32777
+#define ID_SEQUENCER_SAVE               32778
+#define ID_SEQUENCER_SAVEAS             32779
+#define ID_WINDOW_SEQUENCER             32780
+#define ID_WINDOW_LAYOUT                32781
+#define ID_WINDOW_QRCODE                32782
+#define ID_WINDOW_SERVERQRCODE          32783
+#define ID_HELP_TUTORIAL                32784
+#define ID_SERVERID_TEXT                32785
+#define ID_SERVERID_QRCODE              32786
+#define ID_RST                          32787
+#define IDM_RST                         32788
+#define ID_SEQED                        32789
+#define ID_WINDOW_CONSTELLATIONEDITOR   32790
+#define ID_CONSTED                      32791
+#define ID_FILE_CREATESERVER            32792
+#define ID_FILE_RESET                   32793
+#define ID_FILE_RESETSERVER             32794
+#define ID_FILE_CLOSESERVER             32795
+#define ID_FILE_SEQUENCE                32796
+#define ID_SEQUENCE_NEW                 32797
+#define ID_SEQUENCE_OPEN                32798
+#define ID_SEQUENCE_SAVE                32799
+#define ID_SEQUENCE_SAVEAS              32800
+#define IDC_STATIC                      -1
+
+// Next default values for new objects
+// 
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NO_MFC                     1
+#define _APS_NEXT_RESOURCE_VALUE        177
+#define _APS_NEXT_COMMAND_VALUE         32801
+#define _APS_NEXT_CONTROL_VALUE         1081
+#define _APS_NEXT_SYMED_VALUE           110
+#endif
+#endif

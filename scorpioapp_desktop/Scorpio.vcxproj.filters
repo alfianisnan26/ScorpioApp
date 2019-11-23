@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\bitmap">
+      <UniqueIdentifier>{9e900c31-8235-4f7c-8272-76b98b9aaac3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{92aa4bce-d332-482d-8d3c-f155ca0ae200}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\res">
+      <UniqueIdentifier>{52403c46-b928-49ab-90fa-891611d03f1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\backend">
+      <UniqueIdentifier>{2f9b70cf-29c7-4521-9de8-2d7c7a0466fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\include">
+      <UniqueIdentifier>{163e5c94-56f3-4a2a-ba94-c31b5b61192d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WinClass.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="procedure.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Build_increment.h">
+      <Filter>Header Files\res</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Header Files\res</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Header Files\res</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files\res</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files\res</Filter>
+    </ClInclude>
+    <ClInclude Include="backend.h">
+      <Filter>Header Files\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>Header Files\backend</Filter>
+    </ClInclude>
+    <ClInclude Include="qrcodegen.h">
+      <Filter>Header Files\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Scorpio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qrcodegen.c">
+      <Filter>Header Files\include</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="bmp\Scorpio.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\about.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap3.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap4.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap5.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap6.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap7.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap8.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap9.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap10.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap11.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap12.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap13.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\welcome.bmp">
+      <Filter>Resource Files\bitmap</Filter>
+    </Image>
+    <Image Include="bmp\bitmap14.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="bmp\bmp00001.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Scorpio.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="version.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
