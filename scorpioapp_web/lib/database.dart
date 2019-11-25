@@ -30,10 +30,11 @@ void fetchServerState(var server) async {
     if (ret.body == "null" || ret.statusCode != 200) {
       if (serverstate == true) {
         serverstate = false;
-        Navigator.pop(colorScreenContext);
+        Navigator.popUntil(colorScreenContext, ModalRoute.withName(Navigator.defaultRouteName));
+        break;
       }
       clientState = false;
-      Navigator.pop(md.currentcontext);
+      Navigator.popUntil(md.currentcontext, ModalRoute.withName(Navigator.defaultRouteName));
       break;
     }
     if (ret.statusCode == 200) {
@@ -46,7 +47,7 @@ void fetchServerState(var server) async {
         if (resp.state == true) {
           Navigator.push(md.currentcontext, SizeRoute(page: ColorScreen()));
         } else if (resp.state == false) {
-          Navigator.pop(colorScreenContext);
+          Navigator.pop(md.currentcontext);
           //break;
         }
       }
@@ -64,7 +65,7 @@ Future<Post> fetchPost(var server) async {
       clientState = true;
       globalret = ret;
       usertype = ret.type;
-      Navigator.pushReplacement(md.currentcontext, MaterialPageRoute(builder: (context) => ConnectedScreen()));
+      Navigator.push(md.currentcontext, MaterialPageRoute(builder: (context) => ConnectedScreen()));
       fetchServerState(server);
     }else return ret;
   } else {
@@ -168,6 +169,11 @@ class _ColorScreen extends State<ColorScreen> {
     colorScreenContext = context;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.fullscreen, color: Colors.white),
+        backgroundColor: md.HexColor.fromHex(screenColor),
+        onPressed: ()=>html.window.document.documentElement.requestFullscreen(),
+      ),
       body: AnimatedContainer(
         width: size.width,
         height: size.height,
@@ -580,7 +586,7 @@ void _showAlertDialog(var context) {
                   md.serverid = null;
                   clientState = false;
                   _dismissDialog(context);
-                  Navigator.pushReplacement(md.currentcontext, MaterialPageRoute(builder: (context) => md.JoinScreen()));
+                  Navigator.popUntil(md.currentcontext, ModalRoute.withName(Navigator.defaultRouteName));
                 },
                 child: Text('Exit',
                 style: TextStyle(
@@ -590,8 +596,8 @@ void _showAlertDialog(var context) {
               ),
               FlatButton(
                 onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ColorScreen()));
+                  _dismissDialog(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => ColorScreen()));
                 },
                 child: Text('Screen Color',
                 style: TextStyle(
