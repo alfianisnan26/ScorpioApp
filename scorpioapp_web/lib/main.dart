@@ -11,7 +11,7 @@ const firebaseLink = "https://scorp-io.firebaseio.com";
 var serverid;
 bool querystate = false;
 bool serverstate = false;
-const mylink = "https://github.com/alfianisnan26/Scorpio";
+const mylink = "https://github.com/alfianisnan26/ScorpioApp";
 
 check() {
   Uri.tryParse(html.window.location.href);
