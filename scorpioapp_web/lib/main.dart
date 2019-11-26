@@ -63,7 +63,13 @@ class _JoinScreen extends State<JoinScreen> {
                           builder: (context, snapshot) {
                             if (snapshot.hasData && !snapshot.hasError) {
                               if (snapshot.data.dateS == DateTime.now().day) {
-                                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => JoinScreen()));
+                                _dismissDialog(context);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            db.ConnectedScreen()));
+                                db.fetchServerState(serv);
                                 state = true;
                               }
                             }
@@ -137,6 +143,7 @@ class _JoinScreen extends State<JoinScreen> {
   Widget build(BuildContext context) {
     currentcontext = context;
     Size size = MediaQuery.of(context).size;
+    bool pot = (size.height > size.width) ? true : false;
     const double bWs = 200;
     return Scaffold(
         body: Stack(
@@ -145,111 +152,22 @@ class _JoinScreen extends State<JoinScreen> {
           child: new Image.asset("assets/img/light_bg.jpg",
               width: size.width, height: size.height, fit: BoxFit.cover),
         ),
-        Center(child: SingleChildScrollView(
-            child: Column(
-                //mainAxisAlignment: MainAxisAlignment.center,
-                //crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-              Center(
-                child: Image.asset(
-                  "assets/img/logo.png",
-                  width: size.width,
-                  height: 100.0,
-                ),
-              ),
-              Center(
-                child: Container(
-                    child: Image.asset(
-                  "assets/img/title.png",
-                  width: size.width,
-                  height: 200.0,
-                )),
-              ),
-              Container(
-                  width: 220.0,
-                  child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: TextFormField(
-                        onFieldSubmitted: (term) {
-                          if (sIDController.text.length == 4) {
-                            ackAlert(context, sIDController.text);
-                            sIDController.clear();
-                          }
-                        },
-                        controller: sIDController,
-                        textDirection: TextDirection.ltr,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        style: new TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontStyle: FontStyle.normal,
-                            fontSize: 80.0,
-                            color: Color.fromARGB(255, 21, 46, 102)),
-                        maxLength: 4,
-                        decoration: InputDecoration(
-                          enabledBorder: new UnderlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.white)),
-                          border: new UnderlineInputBorder(
-                              borderSide: new BorderSide(color: Colors.blue)),
-                          hintText: "Input Server ID here",
-                          hintStyle: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                            color: Colors.black45,
-                          ),
-                        ),
-                      ))),
-              Center(
-                child: SizedBox(
-                  width: bWs,
-                  child: RaisedButton(
-                    color: primCol,
-                    textColor: Colors.white,
-                    disabledColor: Color.fromRGBO(150, 150, 150, 100),
-                    disabledTextColor: Color.fromRGBO(50, 50, 50, 100),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(18.0),
-                    ),
-                    onPressed: serverstate
-                        ? () {
-                            ackAlert(context, sIDController.text);
-                            sIDController.clear();
-                          }
-                        : null,
-                    child: const Text("Join"),
-                  ),
-                ),
-              ),
-              Center(
-                child: SizedBox(
-                  width: bWs,
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(18.0),
-                    ),
-                    onPressed: () {
-                      _showSimpleDialog(context);
-                    },
-                    child: const Text("Software Download"),
-                  ),
-                ),
-              ),
-              Center(
-                child: SizedBox(
-                  width: bWs,
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(18.0),
-                    ),
-                    onPressed: () {
-                      js.context.callMethod("open", [mylink]);
-                    },
-                    child: const Text("Documentation"),
-                  ),
-                ),
-              ),
-            ])))
+        Center(
+            child: SingleChildScrollView(
+                child: (pot)
+                    ? Column(
+                        children: <Widget>[
+                          title(size),
+                          form(bWs, sIDController, context, ackAlert, size)
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          title(size),
+                          form(bWs, sIDController, context, ackAlert, size)
+                        ],
+                      )))
       ],
     ));
   }
@@ -374,4 +292,104 @@ void _showSimpleDialog(var context) {
 
 void _dismissDialog(var context) {
   Navigator.pop(context);
+}
+
+Widget title(Size size) {
+  return Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+    Image.asset(
+      "assets/img/logo.png",
+      width: 300.0,
+      height: 100.0,
+    ),
+    Container(
+        child: Image.asset(
+      "assets/img/title.png",
+      width: 300.0,
+      height: 200.0,
+    )),
+  ]);
+}
+
+Widget form(var bWs, var sIDController, var context, var ackAlert, Size size) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: <Widget>[
+      Container(
+          width: 220.0,
+          child: TextFormField(
+            onFieldSubmitted: (term) {
+              if (sIDController.text.length == 4) {
+                ackAlert(context, sIDController.text);
+                sIDController.clear();
+              }
+            },
+            controller: sIDController,
+            textDirection: TextDirection.ltr,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: new TextStyle(
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.normal,
+                fontSize: 80.0,
+                color: Color.fromARGB(255, 21, 46, 102)),
+            maxLength: 4,
+            decoration: InputDecoration(
+              enabledBorder: new UnderlineInputBorder(
+                  borderSide: new BorderSide(color: Colors.white)),
+              border: new UnderlineInputBorder(
+                  borderSide: new BorderSide(color: Colors.blue)),
+              hintText: "Input Server ID here",
+              hintStyle: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+                color: Colors.black45,
+              ),
+            ),
+          )),
+      SizedBox(
+        width: bWs,
+        child: RaisedButton(
+          color: primCol,
+          textColor: Colors.white,
+          disabledColor: Color.fromRGBO(150, 150, 150, 100),
+          disabledTextColor: Color.fromRGBO(50, 50, 50, 100),
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(18.0),
+          ),
+          onPressed: serverstate
+              ? () {
+                  ackAlert(context, sIDController.text);
+                  sIDController.clear();
+                }
+              : null,
+          child: const Text("Join"),
+        ),
+      ),
+      SizedBox(
+        width: bWs,
+        child: RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(18.0),
+          ),
+          onPressed: () {
+            _showSimpleDialog(context);
+          },
+          child: const Text("Software Download"),
+        ),
+      ),
+      SizedBox(
+        width: bWs,
+        child: RaisedButton(
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(18.0),
+          ),
+          onPressed: () {
+            js.context.callMethod("open", [mylink]);
+          },
+          child: const Text("Documentation"),
+        ),
+      ),
+    ],
+  );
 }

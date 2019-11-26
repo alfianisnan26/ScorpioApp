@@ -30,11 +30,13 @@ void fetchServerState(var server) async {
     if (ret.body == "null" || ret.statusCode != 200) {
       if (serverstate == true) {
         serverstate = false;
-        Navigator.popUntil(colorScreenContext, ModalRoute.withName(Navigator.defaultRouteName));
+        Navigator.popUntil(colorScreenContext,
+            ModalRoute.withName(Navigator.defaultRouteName));
         break;
       }
       clientState = false;
-      Navigator.popUntil(md.currentcontext, ModalRoute.withName(Navigator.defaultRouteName));
+      Navigator.popUntil(
+          md.currentcontext, ModalRoute.withName(Navigator.defaultRouteName));
       break;
     }
     if (ret.statusCode == 200) {
@@ -43,7 +45,7 @@ void fetchServerState(var server) async {
         colorScreen = resp.testColor;
       }
       if (resp.state != serverstate) {
-         serverstate = resp.state;
+        serverstate = resp.state;
         if (resp.state == true) {
           Navigator.push(md.currentcontext, SizeRoute(page: ColorScreen()));
         } else if (resp.state == false) {
@@ -65,9 +67,11 @@ Future<Post> fetchPost(var server) async {
       clientState = true;
       globalret = ret;
       usertype = ret.type;
-      Navigator.push(md.currentcontext, MaterialPageRoute(builder: (context) => ConnectedScreen()));
+      Navigator.push(md.currentcontext,
+          MaterialPageRoute(builder: (context) => ConnectedScreen()));
       fetchServerState(server);
-    }else return ret;
+    } else
+      return ret;
   } else {
     throw Exception('Failed to load post');
   }
@@ -92,7 +96,7 @@ Future<int> generateUserData(var server) async {
       break;
     }
   }
-  if(clientid!= null) userID = clientid;
+  if (clientid != null) userID = clientid;
   return userID;
 }
 
@@ -172,7 +176,8 @@ class _ColorScreen extends State<ColorScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.fullscreen, color: Colors.white),
         backgroundColor: md.HexColor.fromHex(screenColor),
-        onPressed: ()=>html.window.document.documentElement.requestFullscreen(),
+        onPressed: () =>
+            html.window.document.documentElement.requestFullscreen(),
       ),
       body: AnimatedContainer(
         width: size.width,
@@ -251,90 +256,103 @@ class _MyAppState extends State<ConnectedScreen> {
             width: size.width, height: size.height, fit: BoxFit.cover),
       ),
       Center(
+          child: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-          Text(
-            "Connected to :",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w100,
-            ),
-          ),
-          Text(
-            "${globalret.servName}",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 25,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          Text(
-            "Server ID : $serverid",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          Container(
-            height: 50.0,
-          ),
-          Text(
-            "Your UserID :",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-              fontWeight: FontWeight.w100,
-            ),
-          ),
-          Text(
-            "$clientid",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 80,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Container(
-            height: 30.0,
-          ),
-          userInput(context),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-            RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(18.0),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                "Connected to :",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w100,
                 ),
-                onPressed: () {
-                  if(serverstate)_showAlertDialog(context);
-                  else{
-                    uIDdispose(clientid, serverid);
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text("Back")),
-            Container(
-              width: 10,
-            ),
-            RaisedButton(
-                color: md.primCol,
-                shape: RoundedRectangleBorder(
-                  borderRadius: new BorderRadius.circular(18.0),
+              ),
+              Text(
+                "${globalret.servName}",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.w400,
                 ),
-                onPressed: () {
-                  (serverstate == false)?Navigator.push(context, MaterialPageRoute(builder: (context) => md.LockScreen()))
-                  :Navigator.push(context, MaterialPageRoute(builder: (context) => ColorScreen()));
-                },
-                child: (serverstate == false)?const Text("Lock"):const Text('Screen Color'))
-          ])
-        ]),
-      )
+              ),
+              Text(
+                "Server ID : $serverid",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              Container(
+                height: 50.0,
+              ),
+              Text(
+                "Your UserID :",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w100,
+                ),
+              ),
+              Text(
+                "$clientid",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 80,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                height: 30.0,
+              ),
+              userInput(context),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(18.0),
+                        ),
+                        onPressed: () {
+                          if (serverstate)
+                            _showAlertDialog(context);
+                          else {
+                            uIDdispose(clientid, serverid);
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text("Back")),
+                    Container(
+                      width: 10,
+                    ),
+                    RaisedButton(
+                        color: md.primCol,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(18.0),
+                        ),
+                        onPressed: () {
+                          (serverstate == false)
+                              ? Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => md.LockScreen()))
+                              : Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ColorScreen()));
+                        },
+                        child: (serverstate == false)
+                            ? const Text("Lock")
+                            : const Text('Screen Color'))
+                  ])
+            ]),
+      ))
     ]));
   }
 }
@@ -555,7 +573,7 @@ Widget userInput(BuildContext context) {
 
 // Define a custom Form widget.
 
-class TestScreen extends StatelessWidget{
+class TestScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text("HelloWorld");
@@ -567,55 +585,59 @@ void _dismissDialog(var context) {
 }
 
 void _showAlertDialog(var context) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Constellation is Running'),
-            content: Text('Are you sure you want to leave?'),
-            actions: <Widget>[
-              FlatButton(
-                  onPressed: () {
-                   _dismissDialog(context);
-                  },
-                  child: Text('Cancel')),
-              FlatButton(
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Constellation is Running'),
+          content: Text('Are you sure you want to leave?'),
+          actions: <Widget>[
+            FlatButton(
                 onPressed: () {
-                  uIDdispose(clientid, serverid);
-                  clientid = null;
-                  md.serverid = null;
-                  clientState = false;
                   _dismissDialog(context);
-                  Navigator.popUntil(md.currentcontext, ModalRoute.withName(Navigator.defaultRouteName));
                 },
-                child: Text('Exit',
+                child: Text('Cancel')),
+            FlatButton(
+              onPressed: () {
+                uIDdispose(clientid, serverid);
+                clientid = null;
+                md.serverid = null;
+                clientState = false;
+                _dismissDialog(context);
+                Navigator.popUntil(md.currentcontext,
+                    ModalRoute.withName(Navigator.defaultRouteName));
+              },
+              child: Text(
+                'Exit',
                 style: TextStyle(
                   color: Colors.red,
                 ),
-                ),
               ),
-              FlatButton(
-                onPressed: () {
-                  _dismissDialog(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ColorScreen()));
-                },
-                child: Text('Screen Color',
+            ),
+            FlatButton(
+              onPressed: () {
+                _dismissDialog(context);
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ColorScreen()));
+              },
+              child: Text(
+                'Screen Color',
                 style: TextStyle(
                   color: Color.fromARGB(255, 21, 46, 102),
                   fontWeight: FontWeight.bold,
                 ),
-                ),
-              )
-            ],
-          );
-        });
-  }
+              ),
+            )
+          ],
+        );
+      });
+}
 
-  void uIDdispose(int uid, var server){
-   http.put("$rDl/ServerID/$server/User/$uid.json", body: "null");
-  }
+void uIDdispose(int uid, var server) {
+  http.put("$rDl/ServerID/$server/User/$uid.json", body: "null");
+}
 
-  class SizeRoute extends PageRouteBuilder {
+class SizeRoute extends PageRouteBuilder {
   final Widget page;
   SizeRoute({this.page})
       : super(
@@ -632,10 +654,10 @@ void _showAlertDialog(var context) {
             Widget child,
           ) =>
               Align(
-                child: SizeTransition(
-                  sizeFactor: animation,
-                  child: child,
-                ),
-              ),
+            child: SizeTransition(
+              sizeFactor: animation,
+              child: child,
+            ),
+          ),
         );
 }
