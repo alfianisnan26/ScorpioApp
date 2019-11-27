@@ -117,7 +117,7 @@ class _JoinScreen extends State<JoinScreen> {
 
   Future _scan() async {
     String barcode = await scanner.scan();
-    if (barcode != null) {
+    if (barcode != null && barcode.length > 38) {
       ackAlert(context, barcode.substring(38));
     }
   }
@@ -357,29 +357,19 @@ void _showSimpleDialog(var context) {
         return SimpleDialog(
           title: Text('Choose a package to download'),
           children: <Widget>[
-            SimpleDialogOption(
+           SimpleDialogOption(
               onPressed: () {
                 _dismissDialog(context);
-              },
-              child: const Text('Desktop Server (Installer .exe)'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                _dismissDialog(context);
+                _launchURL("https://drive.google.com/uc?export=download&id=1V2kPPwdJSJ331XSkI2SvtXl5FQ9me50h");
               },
               child: const Text('Desktop Server (.zip)'),
             ),
             SimpleDialogOption(
               onPressed: () {
                 _dismissDialog(context);
+                _launchURL("https://drive.google.com/uc?export=download&id=1nur1n7GBRXv-NWVPuTEilZJpy94-Qu-a");
               },
               child: const Text('Android Client App (.apk)'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                _dismissDialog(context);
-              },
-              child: const Text('iOS Client App (.ipa)'),
             ),
           ],
         );

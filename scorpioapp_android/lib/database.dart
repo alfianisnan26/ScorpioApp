@@ -694,9 +694,9 @@ class SizeRoute extends PageRouteBuilder {
         );
 }
 
-void _showQRoption(var context){
+void _showQRoption(var context) {
   var h = 50.0;
-  var w = 100.0;
+  var w = 300.0;
   showDialog(
       context: context,
       builder: (context) {
@@ -709,137 +709,13 @@ void _showQRoption(var context){
               textAlign: TextAlign.center,
             ),
             children: <Widget>[
-              SizedBox(
-                height: h,
-                width: w,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
-                  child: RaisedButton(
-                    child: Text(
-                      "Show QR",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(20.0),
-                    ),
-                    onPressed: () {
-                      _dismissDialog(context);
-                      _showmyQR(context);
-                    },
-                    color: md.primCol,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: h,
-                width: w,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
-                  child: RaisedButton(
-                    child: Row(
-                      children: <Widget>[
-                      Icon(Icons.keyboard_arrow_left,color: Colors.white,),
-                      Text(
-                        "Scan Left UserID",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ]),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(20.0),
-                    ),
-                    onPressed: () async {
-                      String barcode = await scanner.scan();
-                      if(barcode!=null) boxL.text = barcode;
-                      _dismissDialog(context);
-                    },
-                    color: md.primCol,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: h,
-                width: w,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
-                  child: RaisedButton(
-                    child: Row(
-                      children: <Widget>[
-                      Icon(Icons.keyboard_arrow_right,color: Colors.white,),
-                      Text(
-                        "Scan Right UserID",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ]),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(20.0),
-                    ),
-                    onPressed: () async {
-                      String barcode = await scanner.scan();
-                      if(barcode!=null) boxR.text = barcode;
-                      _dismissDialog(context);
-                    },
-                    color: md.primCol,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: h,
-                width: w,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
-                  child: RaisedButton(
-                    child: Row(
-                      children: <Widget>[
-                      Icon(Icons.keyboard_arrow_up,color: Colors.white,),
-                      Text(
-                        "Scan Front UserID",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ]),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(20.0),
-                    ),
-                    onPressed: () async {
-                      String barcode = await scanner.scan();
-                      if(barcode!=null) boxF.text = barcode;
-                      _dismissDialog(context);
-                    },
-                    color: md.primCol,
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: h,
-                width: w,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
-                  child: RaisedButton(
-                    child: Row(
-                      children: <Widget>[
-                      Icon(Icons.keyboard_arrow_down,color: Colors.white,),
-                      Text(
-                        "Scan Back UserID",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ]),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(20.0),
-                    ),
-                    onPressed: () async {
-                      String barcode = await scanner.scan();
-                      if(barcode!=null) boxB.text = barcode;
-                      _dismissDialog(context);
-                    },
-                    color: md.primCol,
-                  ),
-                ),
-              ),
+              _showItemQR(context, h, w),
             ]);
       });
 }
 
-void _showmyQR(var context) async {
-  Uint8List res = await scanner.generateBarCode(clientid.toString());
+void _showQR(var context, String data) async {
+  Uint8List res = await scanner.generateBarCode(data);
   showDialog(
       context: context,
       builder: (context) {
@@ -849,9 +725,210 @@ void _showmyQR(var context) async {
             ),
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(30),
+                padding: const EdgeInsets.all(20),
                 child: Image.memory(res),
               ),
             ]);
       });
+}
+
+Widget _showItemQR(var context, var h, var w) {
+  Widget child;
+  if (usertype == 0)
+    child = _itemshowQR(context, h, w);
+  else if (usertype == 1)
+    child = Column(
+      children: <Widget>[
+        _itemshowQR(context, h, w),
+        _itemuserLinear(context, h, w)
+      ],
+    );
+  else if (usertype == 2)
+    child = Column(
+      children: <Widget>[
+        _itemshowQR(context, h, w),
+        _itemuserLinear(context, h, w),
+        _itemuserSquare(context, h, w)
+      ],
+    );
+  return child;
+}
+
+Widget _itemshowQR(var context, var h, var w) {
+  return Column(children: <Widget>[
+    SizedBox(
+      height: h,
+      width: w,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+        child: RaisedButton(
+          child: Text(
+            "Show my UserID QR",
+            style: TextStyle(color: Colors.white),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(20.0),
+          ),
+          onPressed: () {
+            _dismissDialog(context);
+            _showQR(context,clientid.toString());
+          },
+          color: md.primCol,
+        ),
+      ),
+    ),
+    SizedBox(
+      height: h,
+      width: w,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 10,),
+        child: RaisedButton(
+          child: Text(
+            "Show ServerID QR",
+            style: TextStyle(color: Colors.white),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(20.0),
+          ),
+          onPressed: () {
+            String linkIn = "https://scorp-io.firebaseapp.com/join/";
+            _dismissDialog(context);
+            _showQR(context,linkIn+serverid);
+          },
+          color: md.primCol,
+        ),
+      ),
+    )
+  ]);
+}
+
+Widget _itemuserLinear(var context, var h, var w) {
+  return Column(children: <Widget>[
+    SizedBox(height: 20), Text("Scan UserID's around you"),
+    SizedBox(
+      height: h,
+      width: w,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+        child: RaisedButton(
+          child: Row(children: <Widget>[
+            Icon(
+              Icons.keyboard_arrow_left,
+              color: Colors.white,
+            ),
+            Text(
+              "Scan Left UserID",
+              style: TextStyle(color: Colors.white),
+            ),
+          ]),
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(20.0),
+          ),
+          onPressed: () async {
+            String barcode = await scanner.scan();
+            if (barcode != null && barcode.length == 4) {
+              boxL.text = barcode;
+              _dismissDialog(context);
+            }
+          },
+          color: md.acCol,
+        ),
+      ),
+    ),
+    SizedBox(
+      height: h,
+      width: w,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+        child: RaisedButton(
+          child: Row(children: <Widget>[
+            Icon(
+              Icons.keyboard_arrow_right,
+              color: Colors.white,
+            ),
+            Text(
+              "Scan Right UserID",
+              style: TextStyle(color: Colors.white),
+            ),
+          ]),
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(20.0),
+          ),
+          onPressed: () async {
+            String barcode = await scanner.scan();
+            if (barcode != null && barcode.length == 4) {
+              boxR.text = barcode;
+              _dismissDialog(context);
+            }
+          },
+          color: md.acCol,
+        ),
+      ),
+    ),
+  ]);
+}
+
+Widget _itemuserSquare(var context, var h, var w) {
+  return Column(children: <Widget>[
+    SizedBox(
+      height: h,
+      width: w,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+        child: RaisedButton(
+          child: Row(children: <Widget>[
+            Icon(
+              Icons.keyboard_arrow_up,
+              color: Colors.white,
+            ),
+            Text(
+              "Scan Front UserID",
+              style: TextStyle(color: Colors.white),
+            ),
+          ]),
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(20.0),
+          ),
+          onPressed: () async {
+            String barcode = await scanner.scan();
+            if (barcode != null && barcode.length == 4) {
+              boxF.text = barcode;
+              _dismissDialog(context);
+            }
+          },
+          color: md.acCol,
+        ),
+      ),
+    ),
+    SizedBox(
+      height: h,
+      width: w,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+        child: RaisedButton(
+          child: Row(children: <Widget>[
+            Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.white,
+            ),
+            Text(
+              "Scan Back UserID",
+              style: TextStyle(color: Colors.white),
+            ),
+          ]),
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(20.0),
+          ),
+          onPressed: () async {
+            String barcode = await scanner.scan();
+            if (barcode != null && barcode.length == 4) {
+              boxB.text = barcode;
+              _dismissDialog(context);
+            }
+          },
+          color: md.acCol,
+        ),
+      ),
+    ),
+  ]);
 }

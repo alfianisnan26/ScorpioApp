@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-
+import 'package:qr_flutter/qr_flutter.dart';
 import 'database.dart' as db;
 import 'package:flutter/material.dart';
 import 'dart:core';
@@ -247,42 +247,6 @@ extension HexColor on Color {
       '${blue.toRadixString(16)}';
 }
 
-void _showSimpleDialog(var context) {
-  showDialog(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: Text('Choose a package to download'),
-          children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () {
-                _dismissDialog(context);
-              },
-              child: const Text('Desktop Server (Installer .exe)'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                _dismissDialog(context);
-              },
-              child: const Text('Desktop Server (.zip)'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                _dismissDialog(context);
-              },
-              child: const Text('Android Client App (.apk)'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                _dismissDialog(context);
-              },
-              child: const Text('iOS Client App (.ipa)'),
-            ),
-          ],
-        );
-      });
-}
-
 void _dismissDialog(var context) {
   Navigator.pop(context);
 }
@@ -345,30 +309,26 @@ Widget form(var bWs, var sIDController, var context, var ackAlert, Size size) {
         child: RaisedButton(
           color: primCol,
           textColor: Colors.white,
-          disabledColor: Color.fromRGBO(150, 150, 150, 100),
-          disabledTextColor: Color.fromRGBO(50, 50, 50, 100),
           shape: RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(18.0),
           ),
-          onPressed: serverstate
-              ? () {
-                  ackAlert(context, sIDController.text);
-                  sIDController.clear();
-                }
-              : null,
-          child: const Text("Join"),
+          onPressed: () {
+            js.context.callMethod("open", ["https://drive.google.com/uc?export=download&id=1nur1n7GBRXv-NWVPuTEilZJpy94-Qu-a"]);
+          },
+          child: const Text("Download for Android"),
         ),
       ),
       SizedBox(
         width: bWs,
         child: RaisedButton(
+          color: acCol,
           shape: RoundedRectangleBorder(
             borderRadius: new BorderRadius.circular(18.0),
           ),
           onPressed: () {
-            _showSimpleDialog(context);
+            js.context.callMethod("open", ["https://drive.google.com/uc?export=download&id=1V2kPPwdJSJ331XSkI2SvtXl5FQ9me50h"]);
           },
-          child: const Text("Software Download"),
+          child: const Text("Download Desktop Server"),
         ),
       ),
       SizedBox(
