@@ -4,7 +4,7 @@ import datetime
 now=datetime.datetime.now()
 
 # Open a file
-fo = open("E:\Programming\Scorpio\Build_increment.h", "r+")
+fo = open("E:\Programming\ScorpioApp\scorpioapp_desktop\Build_increment.h", "r+")
 print ("Name of the file: ", fo.name)
 print ("Date of Revision: ", now.day)
 line = fo.readlines()

@@ -67,7 +67,7 @@ Future<Post> fetchPost(var server) async {
       clientState = true;
       globalret = ret;
       usertype = ret.type;
-      Navigator.push(md.currentcontext,
+      Navigator.pushReplacement(md.currentcontext,
           MaterialPageRoute(builder: (context) => ConnectedScreen()));
       fetchServerState(server);
     } else

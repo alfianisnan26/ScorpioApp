@@ -43,7 +43,7 @@ typedef struct seqfile {
 	char* color;
 }HSEQ;
 
-HSEQ* SeqFile = 0;
+//HSEQ** SeqFile = 0;
 int SeqFile_Count = 0;
 
 //MACROS

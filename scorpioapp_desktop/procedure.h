@@ -657,6 +657,7 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 		switch (LOWORD(wParam)) {
 		case IDC_CANCEL: {
 			EndDialog(hWnd, LOWORD(wParam));
+			break;
 		}
 		case IDC_OK: {
 		ENTERKEY:;
@@ -822,8 +823,8 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 			break;
 		}
 		case IDC_CLEAR: {
-			SeqFile = (HSEQ*)realloc(SeqFile, 0);
-			SeqFile_Count = 0;
+			//SeqFile = (HSEQ*)realloc(SeqFile, 0);
+			//SeqFile_Count = 0;
 		}
 		}
 		return (INT_PTR)TRUE;

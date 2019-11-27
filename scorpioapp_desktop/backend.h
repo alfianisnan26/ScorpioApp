@@ -561,28 +561,40 @@ void InitAllMenu(HWND hWnd) {
 #define SEQTYPE_SCREEN_COLOR -1
 #define SEQTYPE_SCREEN_IMAGE -2
 #define FSEQ SeqFile[SeqFile_Count-1]
+int ListIndex = 0;
 int AddSeqFile(int type,...) {
-	va_list vl;
 	SeqFile_Count++;
-	SeqFile = (HSEQ*)realloc(SeqFile, sizeof(HSEQ) * SeqFile_Count);
-	FSEQ.data[0] = type;
+	va_list vl;
+	HSEQ* val = malloc(sizeof(HSEQ));
+	//SeqFile_Count++;
+	//SeqFile = (HSEQ*)realloc(SeqFile, sizeof(HSEQ) * SeqFile_Count);
+	val->data[0] = type;
 	va_start(vl, type);
 	int a = 0;
 	while (a<9) {
 		int in = va_arg(vl, int);
 		if (in == -1) {
-			FSEQ.color = va_arg(vl, char*);
+			//FSEQ.color = va_arg(vl, char*);
+			val->color = va_arg(vl, char*);
 		}
 		else if (in == -2) {
-			FSEQ.bitmapptr = va_arg(vl, char*);
+			//FSEQ.bitmapptr = va_arg(vl, char*);
+			val->bitmapptr = va_arg(vl, char*);
 		}
 		else if (in > 0) {
-			FSEQ.data[a] = in;
+			//FSEQ.data[a] = in;
+			val->data[a] = in;
 			a++;
 		}
 		else if(in == NULL) break;
 	}
 	va_end(vl);
+	//SeqFile = (HSEQ**)realloc(SeqFile, sizeof(HSEQ*) * SeqFile_Count);
+	HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER] , IDC_LIST);
+	int pos = (int)SendMessage(hlist, LB_ADDSTRING, 0, (LPARAM)TEXT(FCH("Type : %d | Count : %d",type,SeqFile_Count)));
+	SendMessage(hlist, LB_SETITEMDATA, pos, ListIndex);
+	ListIndex++;
+	//FSEQ = val;
 	return SeqFile_Count;
 }
 

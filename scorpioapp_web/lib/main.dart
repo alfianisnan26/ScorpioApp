@@ -63,13 +63,6 @@ class _JoinScreen extends State<JoinScreen> {
                           builder: (context, snapshot) {
                             if (snapshot.hasData && !snapshot.hasError) {
                               if (snapshot.data.dateS == DateTime.now().day) {
-                                _dismissDialog(context);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            db.ConnectedScreen()));
-                                db.fetchServerState(serv);
                                 state = true;
                               }
                             }
