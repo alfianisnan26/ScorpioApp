@@ -1,13 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:torch_compat/torch_compat.dart';
 import 'main.dart' as md;
+import 'package:qrscan/qrscan.dart' as scanner;
 
 const rDl = "https://scorp-io.firebaseio.com";
 
+bool torch;
 Future<Post> post;
 int usertype;
 var now = new DateTime.now();
@@ -39,8 +44,17 @@ void fetchServerState(var server) async {
     }
     if (ret.statusCode == 200) {
       var resp = ScreenVal.fromJson(json.decode((ret.body)));
-      if (serverstate == true && colorScreen != resp.testColor) {
-        colorScreen = resp.testColor;
+      if (serverstate == true) {
+        if (colorScreen != resp.testColor) {
+          colorScreen = resp.testColor;
+        }
+        if (torch != resp.torch) {
+          torch = resp.torch;
+          if (torch == true)
+            TorchCompat.turnOn();
+          else
+            TorchCompat.turnOff();
+        }
       }
       if (resp.state != serverstate) {
         serverstate = resp.state;
@@ -71,6 +85,7 @@ Future<Post> fetchPost(var server) async {
     } else
       return ret;
   } else {
+    clientState = false;
     throw Exception('Failed to load post');
   }
 }
@@ -106,9 +121,13 @@ void writeuserFriend(int sID, int uID, String pos, int id) {
 class ScreenVal {
   final bool state;
   final String testColor;
-  ScreenVal({this.state, this.testColor});
+  final bool torch;
+  ScreenVal({this.state, this.testColor, this.torch});
   factory ScreenVal.fromJson(Map<String, dynamic> json) {
-    return ScreenVal(state: json['State'], testColor: json['TestColor']);
+    return ScreenVal(
+        state: json['State'],
+        testColor: json['TestColor'],
+        torch: json['Torch']);
   }
 }
 
@@ -144,7 +163,9 @@ class _ColorScreen extends State<ColorScreen> {
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIOverlays ([]);
+    torch = false;
+    TorchCompat.turnOff();
+    SystemChrome.setEnabledSystemUIOverlays([]);
     init = false;
     super.initState();
     screenColor = colorScreen;
@@ -163,8 +184,13 @@ class _ColorScreen extends State<ColorScreen> {
 
   @override
   void dispose() {
+    if (torch = true) {
+      torch = false;
+      TorchCompat.turnOff();
+    }
     _timer.cancel();
-    SystemChrome.setEnabledSystemUIOverlays ([SystemUiOverlay.bottom, SystemUiOverlay.top]);
+    SystemChrome.setEnabledSystemUIOverlays(
+        [SystemUiOverlay.bottom, SystemUiOverlay.top]);
     super.dispose();
   }
 
@@ -244,110 +270,122 @@ class _MyAppState extends State<ConnectedScreen> {
     md.currentcontext = context;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _showQRoption(context);
+          },
+          child: Image.asset(
+            "assets/img/qr.png",
+            height: 30,
+          ),
+          backgroundColor: md.primCol,
+          foregroundColor: Colors.white,
+        ),
         body: Stack(children: <Widget>[
-      Center(
-        child: new Image.asset("assets/img/dark_bg.jpg",
-            width: size.width, height: size.height, fit: BoxFit.cover),
-      ),
-      Center(
-          child: SingleChildScrollView(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "Connected to :",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w100,
-                ),
-              ),
-              Text(
-                "${globalret.servName}",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 25,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              Text(
-                "Server ID : $serverid",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              Container(
-                height: 50.0,
-              ),
-              Text(
-                "Your UserID :",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w100,
-                ),
-              ),
-              Text(
-                "$clientid",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 80,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Container(
-                height: 30.0,
-              ),
-              userInput(context),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    RaisedButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(18.0),
-                        ),
-                        onPressed: () {
-                          if (serverstate)
-                            _showAlertDialog(context);
-                          else {
-                            uIDdispose(clientid, serverid);
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Text("Back")),
-                    Container(
-                      width: 10,
+          Center(
+            child: new Image.asset("assets/img/dark_bg.jpg",
+                width: size.width, height: size.height, fit: BoxFit.cover),
+          ),
+          Center(
+              child: SingleChildScrollView(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "Connected to :",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w100,
                     ),
-                    RaisedButton(
-                        color: md.primCol,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(18.0),
+                  ),
+                  Text(
+                    "${globalret.servName}",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  Text(
+                    "Server ID : $serverid",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                  Container(
+                    height: 50.0,
+                  ),
+                  Text(
+                    "Your UserID :",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w100,
+                    ),
+                  ),
+                  Text(
+                    "$clientid",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 80,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Container(
+                    height: 30.0,
+                  ),
+                  userInput(context),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        RaisedButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(18.0),
+                            ),
+                            onPressed: () {
+                              if (serverstate)
+                                _showAlertDialog(context);
+                              else {
+                                uIDdispose(clientid, serverid);
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: const Text("Back")),
+                        Container(
+                          width: 10,
                         ),
-                        onPressed: () {
-                          (serverstate == false)
-                              ? Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => md.LockScreen()))
-                              : Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ColorScreen()));
-                        },
-                        child: (serverstate == false)
-                            ? const Text("Lock")
-                            : const Text('Screen Color'))
-                  ])
-            ]),
-      ))
-    ]));
+                        RaisedButton(
+                            color: md.primCol,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(18.0),
+                            ),
+                            onPressed: () {
+                              (serverstate == false)
+                                  ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              md.LockScreen()))
+                                  : Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ColorScreen()));
+                            },
+                            child: (serverstate == false)
+                                ? const Text("Lock")
+                                : const Text('Screen Color'))
+                      ])
+                ]),
+          ))
+        ]));
   }
 }
 
@@ -654,4 +692,166 @@ class SizeRoute extends PageRouteBuilder {
             ),
           ),
         );
+}
+
+void _showQRoption(var context){
+  var h = 50.0;
+  var w = 100.0;
+  showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(25.0),
+            ),
+            title: Text(
+              'Options',
+              textAlign: TextAlign.center,
+            ),
+            children: <Widget>[
+              SizedBox(
+                height: h,
+                width: w,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                  child: RaisedButton(
+                    child: Text(
+                      "Show QR",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(20.0),
+                    ),
+                    onPressed: () {
+                      _dismissDialog(context);
+                      _showmyQR(context);
+                    },
+                    color: md.primCol,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: h,
+                width: w,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                  child: RaisedButton(
+                    child: Row(
+                      children: <Widget>[
+                      Icon(Icons.keyboard_arrow_left,color: Colors.white,),
+                      Text(
+                        "Scan Left UserID",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ]),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(20.0),
+                    ),
+                    onPressed: () async {
+                      String barcode = await scanner.scan();
+                      if(barcode!=null) boxL.text = barcode;
+                      _dismissDialog(context);
+                    },
+                    color: md.primCol,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: h,
+                width: w,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                  child: RaisedButton(
+                    child: Row(
+                      children: <Widget>[
+                      Icon(Icons.keyboard_arrow_right,color: Colors.white,),
+                      Text(
+                        "Scan Right UserID",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ]),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(20.0),
+                    ),
+                    onPressed: () async {
+                      String barcode = await scanner.scan();
+                      if(barcode!=null) boxR.text = barcode;
+                      _dismissDialog(context);
+                    },
+                    color: md.primCol,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: h,
+                width: w,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                  child: RaisedButton(
+                    child: Row(
+                      children: <Widget>[
+                      Icon(Icons.keyboard_arrow_up,color: Colors.white,),
+                      Text(
+                        "Scan Front UserID",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ]),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(20.0),
+                    ),
+                    onPressed: () async {
+                      String barcode = await scanner.scan();
+                      if(barcode!=null) boxF.text = barcode;
+                      _dismissDialog(context);
+                    },
+                    color: md.primCol,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: h,
+                width: w,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+                  child: RaisedButton(
+                    child: Row(
+                      children: <Widget>[
+                      Icon(Icons.keyboard_arrow_down,color: Colors.white,),
+                      Text(
+                        "Scan Back UserID",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ]),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(20.0),
+                    ),
+                    onPressed: () async {
+                      String barcode = await scanner.scan();
+                      if(barcode!=null) boxB.text = barcode;
+                      _dismissDialog(context);
+                    },
+                    color: md.primCol,
+                  ),
+                ),
+              ),
+            ]);
+      });
+}
+
+void _showmyQR(var context) async {
+  Uint8List res = await scanner.generateBarCode(clientid.toString());
+  showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(25.0),
+            ),
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(30),
+                child: Image.memory(res),
+              ),
+            ]);
+      });
 }

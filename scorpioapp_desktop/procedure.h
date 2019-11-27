@@ -100,6 +100,12 @@ INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
 			reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/TestColor.json",hServ.server_id), FCH("\"%s\"", FCH("#%02x%02x%02x", GetRValue(cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult))));
 			break;
 		}
+		case IDC_TORCH: {
+			torch = (torch == TRUE) ? FALSE : TRUE;
+			SetDlgItemTextA(hWnd, IDC_TORCH, (torch==TRUE)?"Turn Off Torch":"Turn On Torch");
+			reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Torch.json", hServ.server_id), (torch==TRUE)?"true":"false");
+			break;
+		}
 		case IDC_START: {
 			SwitchDBState();
 			if (hServ.state == FALSE) {

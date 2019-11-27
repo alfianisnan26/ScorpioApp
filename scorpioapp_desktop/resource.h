@@ -80,6 +80,8 @@
 #define IDC_START                       1078
 #define IDC_FREE                        1079
 #define IDC_COLOR                       1080
+#define IDC_COLOR2                      1081
+#define IDC_TORCH                       1081
 #define ID_HELP_DOWNLOADCLIENT          32771
 #define ID_FILE_OPENSEQUENCE            32772
 #define ID_FILE_EXIT                    32773

@@ -200,6 +200,7 @@ DWORD WINAPI thUpdateConst() {
 }
 
 void FreeSession() {
+	torch = FALSE;
 	if (IsWindowVisible(hWndGlobal[IDW_CONSTELLATION])) {
 		ShowWindow(hWndGlobal[IDW_CONSTELLATION], SW_HIDE);
 	}
@@ -268,7 +269,9 @@ BOOL inetCheck(HWND h) {
 						"\"ServerName\":\"%ls\","
 						"\"Type\":%d,"
 						"\"MaxC\":%d,"
-						"\"Global\":{\"State\":false,\"TestColor\":\"#000000\"}}",
+						"\"Global\":{\"State\":false,"
+							"\"Torch\":false,"
+							"\"TestColor\":\"#000000\"}}",
 						info->tm_mday, hServ.server_name, hServ.type, hServ.max_client);
 					r = reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d.json", ServerID), send);
 					ShowWindow(dlg, SW_HIDE);
@@ -278,6 +281,7 @@ BOOL inetCheck(HWND h) {
 					EnableMenuItem(hMenu, ID_SERVERID_TEXT, MF_ENABLED);
 					EnableMenuItem(hMenu, ID_FILE_CREATESERVER, MF_DISABLED);
 					EnableMenuItem(hMenu, ID_FILE_RESET, MF_ENABLED);
+					torch = FALSE;
 					if (!hWndGlobal[IDW_CONSTELLATION]) {
 						hWndGlobal[IDW_CONSTELLATION] = CreateDialog(hInst, MAKEINTRESOURCE(IDD_CONSTELLATION), hWndGlobal[IDW_MAINW], Proc_Const);
 						EnableMenuItem(hMenu, ID_CONSTED, MF_ENABLED);

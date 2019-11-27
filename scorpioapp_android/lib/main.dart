@@ -117,11 +117,12 @@ class _JoinScreen extends State<JoinScreen> {
 
   Future _scan() async {
     String barcode = await scanner.scan();
-    if(barcode!=null){
-      ackAlert(context, barcode);
+    if (barcode != null) {
+      ackAlert(context, barcode.substring(38));
     }
   }
 
+  bool torch = false;
   @override
   Widget build(BuildContext context) {
     currentcontext = context;
@@ -130,8 +131,13 @@ class _JoinScreen extends State<JoinScreen> {
     const double bWs = 200;
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: Icon(Icons.settings),
+          onPressed: () {
+            _scan();
+          },
+          child: Image.asset(
+            "assets/img/qr.png",
+            height: 30,
+          ),
           backgroundColor: primCol,
           foregroundColor: Colors.white,
         ),
@@ -160,102 +166,106 @@ class _JoinScreen extends State<JoinScreen> {
           ],
         ));
   }
-  Widget title(Size size) {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-      Image.asset(
-        "assets/img/logo.png",
-        width: 300.0,
-        height: 100.0,
-      ),
-      Container(
-          child: Image.asset(
-        "assets/img/title.png",
-        width: 300.0,
-        height: 200.0,
-      )),
-    ]);
-  }
 
-  Widget form(var bWs, var sIDController, var context, var ackAlert, Size size) {
-    return Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-      Container(
-          width: 220.0,
-          child: TextFormField(
-            onFieldSubmitted: (term) {
-              if (sIDController.text.length == 4) {
-                ackAlert(context, sIDController.text);
-                sIDController.clear();
-              }
-            },
-            controller: sIDController,
-            textDirection: TextDirection.ltr,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            style: new TextStyle(
-                fontWeight: FontWeight.bold,
-                fontStyle: FontStyle.normal,
-                fontSize: 80.0,
-                color: Color.fromARGB(255, 21, 46, 102)),
-            maxLength: 4,
-            decoration: InputDecoration(
-              enabledBorder: new UnderlineInputBorder(
-                  borderSide: new BorderSide(color: Colors.white)),
-              border: new UnderlineInputBorder(
-                  borderSide: new BorderSide(color: Colors.blue)),
-              hintText: "Input Server ID here",
-              hintStyle: TextStyle(
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
-                color: Colors.black45,
-              ),
-            ),
-          )),
-      Row(
+  Widget title(Size size) {
+    return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          SizedBox(
-            width: bWs,
-            child: RaisedButton(
-              color: primCol,
-              textColor: Colors.white,
-              disabledColor: Color.fromRGBO(150, 150, 150, 100),
-              disabledTextColor: Color.fromRGBO(50, 50, 50, 100),
-              shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(18.0),
-              ),
-              onPressed: serverstate
-                  ? () {
-                      ackAlert(context, sIDController.text);
-                      sIDController.clear();
-                    }
-                  : null,
-              child: const Text("Join"),
-            ),
+          Image.asset(
+            "assets/img/logo.png",
+            width: 300.0,
+            height: 100.0,
           ),
-          SizedBox(
-            width: 10.0
-          ),
-          SizedBox(
-            width: 60.0,
-            child: RaisedButton(
-              color: primCol,
-              textColor: Colors.white,
-              disabledColor: Color.fromRGBO(150, 150, 150, 100),
-              disabledTextColor: Color.fromRGBO(50, 50, 50, 100),
-              shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(18.0),
+          Container(
+              child: Image.asset(
+            "assets/img/title.png",
+            width: 300.0,
+            height: 200.0,
+          )),
+        ]);
+  }
+
+  Widget form(
+      var bWs, var sIDController, var context, var ackAlert, Size size) {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+              width: 220.0,
+              child: TextFormField(
+                onFieldSubmitted: (term) {
+                  if (sIDController.text.length == 4) {
+                    ackAlert(context, sIDController.text);
+                    sIDController.clear();
+                  }
+                },
+                controller: sIDController,
+                textDirection: TextDirection.ltr,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: new TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.normal,
+                    fontSize: 80.0,
+                    color: Color.fromARGB(255, 21, 46, 102)),
+                maxLength: 4,
+                decoration: InputDecoration(
+                  enabledBorder: new UnderlineInputBorder(
+                      borderSide: new BorderSide(color: Colors.white)),
+                  border: new UnderlineInputBorder(
+                      borderSide: new BorderSide(color: Colors.blue)),
+                  hintText: "Input Server ID here",
+                  hintStyle: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20,
+                    color: Colors.black45,
+                  ),
+                ),
+              )),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                width: bWs,
+                child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(18.0),
+                  ),
+                  onPressed: () {
+                    _showSimpleDialog(context);
+                  },
+                  child: const Text("Software Download"),
+                ),
               ),
-              onPressed: () {
-                _scan();
-              },
-              child: Image.asset("assets/img/qr.png",
-              )
-            ),
+              SizedBox(
+                width: bWs,
+                child: RaisedButton(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(18.0),
+                  ),
+                  onPressed: () {
+                    _launchURL(mylink);
+                  },
+                  child: const Text("Documentation"),
+                ),
+              ),
+              SizedBox(
+                width: bWs,
+                child: RaisedButton(
+                  color: acCol,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(18.0),
+                  ),
+                  onPressed: () {
+                    _launchURL("https://scorp-io.web.app");
+                  },
+                  child: const Text("Open Web Apps"),
+                ),
+              ),
+            ],
           )
-        ],
-      )
-    ]);
+        ]);
   }
 }
 
@@ -422,7 +432,8 @@ class _MyAppState extends State<MyApp> {
               Text('RESULT  $barcode'),
               RaisedButton(onPressed: _scan, child: Text("Scan")),
               RaisedButton(onPressed: _scanPhoto, child: Text("Scan Photo")),
-              RaisedButton(onPressed: _generateBarCode, child: Text("Generate Barcode")),
+              RaisedButton(
+                  onPressed: _generateBarCode, child: Text("Generate Barcode")),
             ],
           ),
         ),
@@ -441,7 +452,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future _generateBarCode() async {
-    Uint8List result = await scanner.generateBarCode('https://github.com/leyan95/qrcode_scanner');
+    Uint8List result = await scanner
+        .generateBarCode('https://github.com/leyan95/qrcode_scanner');
     this.setState(() => this.bytes = result);
   }
 }
