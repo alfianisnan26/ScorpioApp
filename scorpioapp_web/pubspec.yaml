@@ -1,5 +1,5 @@
-name: scorpioapp
-description: A new Flutter project.
+name: Scorp.io
+description: Create your own constellation.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -21,10 +21,7 @@ dependencies:
     sdk: flutter
   http: ^0.12.0+2
   html: ^0.14.0+3
-  qr_flutter:
-    git:
-      url: git://github.com/lukef/qr.flutter.git
-
+  flutter_speed_dial: ^1.2.4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -33,8 +30,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

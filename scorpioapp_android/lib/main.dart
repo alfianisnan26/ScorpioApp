@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 import 'database.dart' as db;
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'dart:core';
-import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 
@@ -130,17 +130,50 @@ class _JoinScreen extends State<JoinScreen> {
     bool pot = (size.height > size.width) ? true : false;
     const double bWs = 200;
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            _scan();
-          },
-          child: Image.asset(
-            "assets/img/qr.png",
-            height: 30,
-          ),
-          backgroundColor: primCol,
-          foregroundColor: Colors.white,
-        ),
+        floatingActionButton: SpeedDial(
+            backgroundColor: Colors.white,
+            foregroundColor: primCol,
+            overlayColor: Colors.black,
+            overlayOpacity: 0.5,
+            animatedIcon: AnimatedIcons.menu_close,
+            children: [
+              SpeedDialChild(
+                backgroundColor: acCol,
+                child: Icon(Icons.file_download),
+                label: "Download Desktop Server",
+                onTap: () => _launchURL(
+                  "https://drive.google.com/uc?export=download&id=1V2kPPwdJSJ331XSkI2SvtXl5FQ9me50h"
+                ),
+              ),
+              SpeedDialChild(
+                backgroundColor: acCol,
+                child: Icon(Icons.file_download),
+                label: "Download APK for Android",
+                onTap: () => _launchURL(
+                  "https://drive.google.com/uc?export=download&id=1nur1n7GBRXv-NWVPuTEilZJpy94-Qu-a"
+                ),
+              ),
+              SpeedDialChild(
+                backgroundColor: acCol,
+                child: Icon(Icons.exit_to_app),
+                label: "Launch WebApp",
+                onTap: () => _launchURL("https://scorp-io.web.app"),
+              ),
+              SpeedDialChild(
+                backgroundColor: primCol,
+                child: Icon(Icons.book),
+                label: "Documentation",
+                onTap: () => _launchURL(mylink),
+              ),
+              SpeedDialChild(
+                  backgroundColor: Colors.green,
+                  child: Icon(Icons.help_outline),
+                  label: "Help",
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HelpPage()));
+                  }),
+            ]),
         body: Stack(
           children: <Widget>[
             Center(
@@ -223,48 +256,23 @@ class _JoinScreen extends State<JoinScreen> {
                   ),
                 ),
               )),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
+              Container(height: 30,),
               SizedBox(
-                width: bWs,
+                width: 170,
+                height: 50,
                 child: RaisedButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(18.0),
-                  ),
-                  onPressed: () {
-                    _showSimpleDialog(context);
-                  },
-                  child: const Text("Software Download"),
-                ),
-              ),
-              SizedBox(
-                width: bWs,
-                child: RaisedButton(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(18.0),
-                  ),
-                  onPressed: () {
-                    _launchURL(mylink);
-                  },
-                  child: const Text("Documentation"),
-                ),
-              ),
-              SizedBox(
-                width: bWs,
-                child: RaisedButton(
-                  color: acCol,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(18.0),
-                  ),
-                  onPressed: () {
-                    _launchURL("https://scorp-io.web.app");
-                  },
-                  child: const Text("Open Web Apps"),
-                ),
-              ),
-            ],
-          )
+                  elevation: 15,
+                  shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30)),
+                  color: Colors.white,
+                  textColor: primCol,
+                onPressed: ()=>_scan(),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                  Image.asset("assets/img/qr.png", height: 30, color: primCol,),
+                  Text("Scan Server ID QR"),
+                ],),
+              ),)
         ]);
   }
 }
@@ -277,6 +285,14 @@ class LockScreen extends StatelessWidget {
     currentcontext = context;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Icon(Icons.lock_open),
+          backgroundColor: Colors.white,
+          foregroundColor: primCol,
+        ),
         body: Stack(children: <Widget>[
       Center(
         child: new Image.asset("assets/img/dark_bg.jpg",
@@ -319,14 +335,6 @@ class LockScreen extends StatelessWidget {
                   ),
                 ]),
               )),
-          RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(18.0),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Back")),
         ],
       ))
     ]));
@@ -350,36 +358,6 @@ extension HexColor on Color {
       '${blue.toRadixString(16)}';
 }
 
-void _showSimpleDialog(var context) {
-  showDialog(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: Text('Choose a package to download'),
-          children: <Widget>[
-           SimpleDialogOption(
-              onPressed: () {
-                _dismissDialog(context);
-                _launchURL("https://drive.google.com/uc?export=download&id=1V2kPPwdJSJ331XSkI2SvtXl5FQ9me50h");
-              },
-              child: const Text('Desktop Server (.zip)'),
-            ),
-            SimpleDialogOption(
-              onPressed: () {
-                _dismissDialog(context);
-                _launchURL("https://drive.google.com/uc?export=download&id=1nur1n7GBRXv-NWVPuTEilZJpy94-Qu-a");
-              },
-              child: const Text('Android Client App (.apk)'),
-            ),
-          ],
-        );
-      });
-}
-
-void _dismissDialog(var context) {
-  Navigator.pop(context);
-}
-
 _launchURL(String url) async {
   if (await canLaunch(url)) {
     await launch(url);
@@ -388,62 +366,14 @@ _launchURL(String url) async {
   }
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  String barcode = '';
-  Uint8List bytes = Uint8List(200);
-
-  @override
-  initState() {
-    super.initState();
-  }
-
+class HelpPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Qrcode Scanner Example'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                width: 200,
-                height: 200,
-                child: Image.memory(bytes),
-              ),
-              Text('RESULT  $barcode'),
-              RaisedButton(onPressed: _scan, child: Text("Scan")),
-              RaisedButton(onPressed: _scanPhoto, child: Text("Scan Photo")),
-              RaisedButton(
-                  onPressed: _generateBarCode, child: Text("Generate Barcode")),
-            ],
-          ),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Help"),
       ),
+      body: Text("This is Help Page"),
     );
-  }
-
-  Future _scan() async {
-    String barcode = await scanner.scan();
-    setState(() => this.barcode = barcode);
-  }
-
-  Future _scanPhoto() async {
-    String barcode = await scanner.scanPhoto();
-    setState(() => this.barcode = barcode);
-  }
-
-  Future _generateBarCode() async {
-    Uint8List result = await scanner
-        .generateBarCode('https://github.com/leyan95/qrcode_scanner');
-    this.setState(() => this.bytes = result);
   }
 }

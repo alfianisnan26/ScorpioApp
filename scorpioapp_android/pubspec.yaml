@@ -1,5 +1,5 @@
-name: scorpioapp
-description: A new Flutter project.
+name: Scorp.io
+description: Create your own constellation.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -23,6 +23,7 @@ dependencies:
   url_launcher: ^5.2.7
   qrscan: ^0.2.17
   torch_compat: ^1.0.0
+  flutter_speed_dial: ^1.2.4
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'database.dart' as db;
 import 'package:flutter/material.dart';
 import 'dart:core';
@@ -136,33 +136,62 @@ class _JoinScreen extends State<JoinScreen> {
   Widget build(BuildContext context) {
     currentcontext = context;
     Size size = MediaQuery.of(context).size;
-    bool pot = (size.height > size.width) ? true : false;
     const double bWs = 200;
     return Scaffold(
+        floatingActionButton: SpeedDial(
+            backgroundColor: Colors.white,
+            foregroundColor: primCol,
+            overlayColor: Colors.black,
+            overlayOpacity: 0.5,
+            animatedIcon: AnimatedIcons.menu_close,
+            children: [
+              SpeedDialChild(
+                backgroundColor: acCol,
+                child: Icon(Icons.file_download),
+                label: "Download Desktop Server",
+                onTap: () => js.context.callMethod("open", [
+                  "https://drive.google.com/uc?export=download&id=1V2kPPwdJSJ331XSkI2SvtXl5FQ9me50h"
+                ]),
+              ),
+              SpeedDialChild(
+                backgroundColor: acCol,
+                child: Icon(Icons.file_download),
+                label: "Download APK for Android",
+                onTap: () => js.context.callMethod("open", [
+                  "https://drive.google.com/uc?export=download&id=1nur1n7GBRXv-NWVPuTEilZJpy94-Qu-a"
+                ]),
+              ),
+              SpeedDialChild(
+                backgroundColor: primCol,
+                child: Icon(Icons.book),
+                label: "Documentation",
+                onTap: () => js.context.callMethod("open", [mylink]),
+              ),
+              SpeedDialChild(
+                  backgroundColor: Colors.green,
+                  child: Icon(Icons.help_outline),
+                  label: "Help",
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HelpPage()));
+                  })
+            ]),
         body: Stack(
-      children: <Widget>[
-        Center(
-          child: new Image.asset("assets/img/light_bg.jpg",
-              width: size.width, height: size.height, fit: BoxFit.cover),
-        ),
-        Center(
-            child: SingleChildScrollView(
-                child: (pot)
-                    ? Column(
-                        children: <Widget>[
-                          title(size),
-                          form(bWs, sIDController, context, ackAlert, size)
-                        ],
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          title(size),
-                          form(bWs, sIDController, context, ackAlert, size)
-                        ],
-                      )))
-      ],
-    ));
+          children: <Widget>[
+            Center(
+              child: new Image.asset("assets/img/light_bg.jpg",
+                  width: size.width, height: size.height, fit: BoxFit.cover),
+            ),
+            Center(
+                child: SingleChildScrollView(
+                    child: Column(
+              children: <Widget>[
+                title(size),
+                form(bWs, sIDController, context, ackAlert, size)
+              ],
+            )))
+          ],
+        ));
   }
 }
 
@@ -174,59 +203,59 @@ class LockScreen extends StatelessWidget {
     currentcontext = context;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Icon(Icons.lock_open),
+          backgroundColor: Colors.white,
+          foregroundColor: primCol,
+        ),
         body: Stack(children: <Widget>[
-      Center(
-        child: new Image.asset("assets/img/dark_bg.jpg",
-            width: size.width, height: size.height, fit: BoxFit.cover),
-      ),
-      Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          new Image.asset(
-            "assets/img/icon.png",
-            width: 150.0,
-            height: 150.0,
+          Center(
+            child: new Image.asset("assets/img/dark_bg.jpg",
+                width: size.width, height: size.height, fit: BoxFit.cover),
           ),
-          Container(
-            height: 20.0,
-          ),
-          Container(
-              width: size.width,
-              height: 100.0,
-              child: Center(
-                child: Column(children: <Widget>[
-                  Text(
-                    "Please Wait",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w200,
-                    ),
-                  ),
-                  Text(
-                    "Waiting other users to join Constellation",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w200,
-                    ),
-                  ),
-                ]),
-              )),
-          RaisedButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(18.0),
+          Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Image.asset(
+                "assets/img/icon.png",
+                width: 150.0,
+                height: 150.0,
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("Back")),
-        ],
-      ))
-    ]));
+              Container(
+                height: 20.0,
+              ),
+              Container(
+                  width: size.width,
+                  height: 100.0,
+                  child: Center(
+                    child: Column(children: <Widget>[
+                      Text(
+                        "Please Wait",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
+                      Text(
+                        "Waiting other users to join Constellation",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
+                    ]),
+                  )),
+            ],
+          ))
+        ]));
   }
 }
 
@@ -304,45 +333,18 @@ Widget form(var bWs, var sIDController, var context, var ackAlert, Size size) {
               ),
             ),
           )),
-      SizedBox(
-        width: bWs,
-        child: RaisedButton(
-          color: primCol,
-          textColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(18.0),
-          ),
-          onPressed: () {
-            js.context.callMethod("open", ["https://drive.google.com/uc?export=download&id=1nur1n7GBRXv-NWVPuTEilZJpy94-Qu-a"]);
-          },
-          child: const Text("Download for Android"),
-        ),
-      ),
-      SizedBox(
-        width: bWs,
-        child: RaisedButton(
-          color: acCol,
-          shape: RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(18.0),
-          ),
-          onPressed: () {
-            js.context.callMethod("open", ["https://drive.google.com/uc?export=download&id=1V2kPPwdJSJ331XSkI2SvtXl5FQ9me50h"]);
-          },
-          child: const Text("Download Desktop Server"),
-        ),
-      ),
-      SizedBox(
-        width: bWs,
-        child: RaisedButton(
-          shape: RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(18.0),
-          ),
-          onPressed: () {
-            js.context.callMethod("open", [mylink]);
-          },
-          child: const Text("Documentation"),
-        ),
-      ),
     ],
   );
+}
+
+class HelpPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Help"),
+      ),
+      body: Text("This is Help Page"),
+    );
+  }
 }

@@ -76,6 +76,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_speed_dial:
+    dependency: "direct main"
+    description:
+      name: flutter_speed_dial
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -144,22 +151,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.0"
-  qr:
-    dependency: transitive
-    description:
-      name: qr
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.0"
-  qr_flutter:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: e46c8ee5a46c3ee95a7cb08cfa979225d8c680bf
-      url: "git://github.com/lukef/qr.flutter.git"
-    source: git
-    version: "3.1.0"
   quiver:
     dependency: transitive
     description:
@@ -237,4 +228,3 @@ packages:
     version: "3.5.0"
 sdks:
   dart: ">=2.4.0 <3.0.0"
-  flutter: ">=1.7.0"
