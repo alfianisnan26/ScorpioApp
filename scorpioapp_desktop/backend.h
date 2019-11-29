@@ -564,41 +564,104 @@ void InitAllMenu(HWND hWnd) {
 #define SEQTYPE_SCREEN 3
 #define SEQTYPE_SCREEN_COLOR -1
 #define SEQTYPE_SCREEN_IMAGE -2
-#define FSEQ SeqFile[SeqFile_Count-1]
 int ListIndex = 0;
-int AddSeqFile(int type,...) {
-	SeqFile_Count++;
-	va_list vl;
-	HSEQ* val = malloc(sizeof(HSEQ));
-	//SeqFile_Count++;
-	//SeqFile = (HSEQ*)realloc(SeqFile, sizeof(HSEQ) * SeqFile_Count);
-	val->data[0] = type;
-	va_start(vl, type);
-	int a = 0;
-	while (a<9) {
-		int in = va_arg(vl, int);
-		if (in == -1) {
-			//FSEQ.color = va_arg(vl, char*);
-			val->color = va_arg(vl, char*);
-		}
-		else if (in == -2) {
-			//FSEQ.bitmapptr = va_arg(vl, char*);
-			val->bitmapptr = va_arg(vl, char*);
-		}
-		else if (in > 0) {
-			//FSEQ.data[a] = in;
-			val->data[a] = in;
-			a++;
-		}
-		else if(in == NULL) break;
+
+char* formtrans(HSEQ* seq) {
+	char* form = NULL;
+	char* trans = NULL;
+	switch (seq->data[1]) {
+	case 0:
+		form = "Bars";
+		break;
+	case 1:
+		form = "Blink";
+		break;
+	case 2:
+		form = "Checkboard";
+		break;
+	case 3:
+		form = "Fill";
+		break;
 	}
-	va_end(vl);
-	//SeqFile = (HSEQ**)realloc(SeqFile, sizeof(HSEQ*) * SeqFile_Count);
-	HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER] , IDC_LIST);
-	int pos = (int)SendMessage(hlist, LB_ADDSTRING, 0, (LPARAM)TEXT(FCH("Type : %d | Count : %d",type,SeqFile_Count)));
+	switch (seq->data[3]) {
+	case 0:
+		trans = "Cut";
+		break;
+	case 1:
+		trans = "Fade";
+		break;
+	case 2:
+		trans = "Random Points";
+		break;
+	case 3:
+		trans = "Split";
+		break;
+	case 4:
+		trans = "Wipe";
+		break;
+	}
+	char* out = FCH("Formation : %s | Transition : %s", form, trans);
+	return out;
+}
+
+void InsertList(HSEQ* seq) {
+	char* out = NULL;
+	if (seq->data[0] == SEQTYPE_DELAY) {
+		out = FCH("- DELAY | Time : %d ms", seq->data[1]);
+	}
+	else if (seq->data[0] == SEQTYPE_LOOP) {
+		out = FCH("LOOP | ID : %d | Count : %d",seq->data[1],seq->data[2]);
+	}
+	else if (seq->data[0] == SEQTYPE_FLASH) {
+		out = FCH("- FLASH | %s", formtrans(seq));
+	}
+	else if (seq->data[0] == SEQTYPE_SCREEN) {
+		char* myout = NULL;
+		if (seq->data[1] == 1) myout = FCH("Image : %s", seq->bitmapptr);
+		else myout = FCH("Color : %s", seq->color);
+		out = FCH("- SCREEN | %s | %s", formtrans(seq), myout);
+	}
+
+	HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
+	int pos = (int)SendMessageA(hlist, LB_ADDSTRING, 0, (LPARAM)(out));
 	SendMessage(hlist, LB_SETITEMDATA, pos, ListIndex);
 	ListIndex++;
-	//FSEQ = val;
+
+	if (seq->data[0] == SEQTYPE_LOOP) {
+		HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
+		int pos = (int)SendMessageA(hlist, LB_ADDSTRING, 0, (LPARAM)(FCH("} EOL ID : %d",seq->data[1])));
+		SendMessage(hlist, LB_SETITEMDATA, pos, ListIndex);
+		ListIndex++;
+	}
+
+	return;
+}
+#define EOVA -100
+int AddSeqFile(int type,...) {
+	SeqFile_Count++;
+	HSEQ* FSEQ = (HSEQ*)malloc(sizeof(HSEQ));
+	FSEQ->data[0] = type;
+	int a = 0;
+	va_list vt;
+	va_start(vt, type);
+	while (TRUE) {
+		int out = va_arg(vt, int);
+		if (out == EOVA) break;
+		else if(out >= 0) {
+			a++;
+			FSEQ->data[a] = out;
+		}
+		else if (out == SEQTYPE_SCREEN_COLOR) {
+			FSEQ->color = va_arg(vt, char*);
+		}
+		else if (out == SEQTYPE_SCREEN_IMAGE) {
+			FSEQ->bitmapptr = va_arg(vt, char*);
+		}
+	}
+	va_end(vt);
+	InsertList(FSEQ);
+	FSEQ->next = SeqTails;
+	SeqTails = FSEQ;
 	return SeqFile_Count;
 }
 

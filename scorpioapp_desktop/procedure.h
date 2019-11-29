@@ -679,7 +679,7 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 					break;
 				}
 				if (SendMessage(GetDlgItem(hWndGlobal[IDW_CMD_DLY], IDC_COMBO1), CB_GETCURSEL, 0, 0) == 1) num *= 1000;
-				AddSeqFile(SEQTYPE_DELAY, num, NULL);
+				AddSeqFile(SEQTYPE_DELAY, num, EOVA);
 				EndDialog(hWnd, LOWORD(wParam));
 				break;
 			}
@@ -705,7 +705,8 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 				else if (transition == 4) {
 					transprop1 = SendMessage(GetDlgItem(hWndGlobal[IDW_TRANS_WIPE2], IDC_COMBO1), CB_GETCURSEL, 0, 0);
 				}
-				AddSeqFile(type, form, formprop, transition, transdly, transprop1, transprop2, NULL);
+				//MessageBoxA(hWnd, FCH("type %d | form %d | formprop %d | trans %d | transdly %d | transprop1 %d | transprop2 %d ", type,form,formprop,transition,transdly,transprop1,transprop2), "DEBUG", MB_OK);
+				AddSeqFile(type, form, formprop, transition, transdly, transprop1, transprop2, EOVA);
 				EndDialog(hWnd, LOWORD(wParam));
 				break;
 			}
@@ -717,12 +718,12 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 					break;
 				}
 				bSuccess = FALSE;
-				int count = GetDlgItemInt(hWndGlobal[IDW_CMD_LOOP], IDC_EDIT3, &bSuccess, FALSE);
+				int count = GetDlgItemInt(hWndGlobal[IDW_CMD_LOOP], IDC_EDIT5, &bSuccess, FALSE);
 				if (bSuccess == FALSE) {
 					MessageBox(hWnd, L"Please input an integer value on Count box", L"Error", MB_OK | MB_ICONERROR);
 					break;
 				}
-				AddSeqFile(SEQTYPE_LOOP, loopid, count, NULL);
+				AddSeqFile(SEQTYPE_LOOP, loopid, count, EOVA);
 				EndDialog(hWnd, LOWORD(wParam));
 				break;
 			}
@@ -751,20 +752,20 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 					formprop = SendMessage(GetDlgItem(hWndGlobal[IDW_FORM_BARS], IDC_COMBO1), CB_GETCURSEL, 0, 0);
 					char* path = malloc(sizeof(char) * 8);
 					GetDlgItemTextA(hWndGlobal[IDW_CMD_SCREEN], IDC_EDIT2, path, 8);
-					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_COLOR, path, NULL);
+					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_COLOR, path, EOVA);
 					free(path);
 				}
 				else if (form == 1) {
 					char* path = malloc(sizeof(char) * 128);
 					int size = GetDlgItemTextA(hWndGlobal[IDW_FORM_IMAGE1], IDC_NAME, path, 128);
 					path = (char*)realloc(path, sizeof(char) * size);
-					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_IMAGE, path, NULL);
+					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_IMAGE, path, EOVA);
 					free(path);
 				}
 				else {
 					char* path = malloc(sizeof(char) * 8);
 					GetDlgItemTextA(hWndGlobal[IDW_CMD_SCREEN], IDC_EDIT2, path, 8);
-					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_COLOR, path, NULL);
+					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_COLOR, path, EOVA);
 					free(path);
 				}
 				EndDialog(hWnd, LOWORD(wParam));

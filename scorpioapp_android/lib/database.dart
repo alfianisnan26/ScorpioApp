@@ -9,6 +9,7 @@ import 'package:Scorp.io/main.dart';
 import 'package:torch_compat/torch_compat.dart';
 import 'main.dart' as md;
 import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:screen/screen.dart';
 
 const rDl = "https://scorp-io.firebaseio.com";
 
@@ -160,11 +161,19 @@ class _ColorScreen extends State<ColorScreen> {
   Timer _timer;
   bool init;
   final time = Duration(milliseconds: 500);
+  double brightness;
+
+  void getBright() async{
+    brightness = await Screen.brightness;
+    Screen.setBrightness(1.0);
+  }
 
   @override
   void initState() {
+    getBright();
     torch = false;
     TorchCompat.turnOff();
+    Screen.keepOn(true);
     SystemChrome.setEnabledSystemUIOverlays([]);
     init = false;
     super.initState();
@@ -189,6 +198,8 @@ class _ColorScreen extends State<ColorScreen> {
       TorchCompat.turnOff();
     }
     _timer.cancel();
+    Screen.keepOn(false);
+    Screen.setBrightness(brightness);
     SystemChrome.setEnabledSystemUIOverlays(
         [SystemUiOverlay.bottom, SystemUiOverlay.top]);
     super.dispose();
