@@ -167,9 +167,9 @@ LPSTR reqHTTP(int state, const char* domain, const char* subdomain, const char* 
 	return 0;
 }
 
-LPCWSTR WinFileDialog(int state) {
+LPWSTR WinFileDialog(int state) {
 	OPENFILENAME ofn;
-	char szFile[100];
+	char szFile[256];
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = NULL;
@@ -566,7 +566,7 @@ void InitAllMenu(HWND hWnd) {
 #define SEQTYPE_SCREEN_IMAGE -2
 int ListIndex = 0;
 
-char* formtrans(HSEQ* seq) {
+char* seqch(HSEQ* seq) {
 	char* form = NULL;
 	char* trans = NULL;
 	switch (seq->data[1]) {
@@ -574,14 +574,16 @@ char* formtrans(HSEQ* seq) {
 		form = "Bars";
 		break;
 	case 1:
-		form = "Blink";
+		form = (seq->data[0] == SEQTYPE_SCREEN) ? "Bitmap" : "Blink";
 		break;
 	case 2:
-		form = "Checkboard";
+		form = (seq->data[0] == SEQTYPE_SCREEN) ? "Blink" : "Checkboard";
 		break;
 	case 3:
-		form = "Fill";
+		form = (seq->data[0] == SEQTYPE_SCREEN) ? "Checkboard" : "Fill";
 		break;
+	case 4:
+		form = "Fill";
 	}
 	switch (seq->data[3]) {
 	case 0:
@@ -601,40 +603,41 @@ char* formtrans(HSEQ* seq) {
 		break;
 	}
 	char* out = FCH("Formation : %s | Transition : %s", form, trans);
-	return out;
-}
-
-void InsertList(HSEQ* seq) {
-	char* out = NULL;
+	char* outAll = NULL;
 	if (seq->data[0] == SEQTYPE_DELAY) {
-		out = FCH("- DELAY | Time : %d ms", seq->data[1]);
+		outAll = FCH("- DELAY | Time : %d ms", seq->data[1]);
 	}
 	else if (seq->data[0] == SEQTYPE_LOOP) {
-		out = FCH("LOOP | ID : %d | Count : %d",seq->data[1],seq->data[2]);
+		outAll = FCH("LOOP | ID : %d | Count : %d {", seq->data[1], seq->data[2]);
 	}
 	else if (seq->data[0] == SEQTYPE_FLASH) {
-		out = FCH("- FLASH | %s", formtrans(seq));
+		outAll = FCH("- FLASH | %s", out);
 	}
 	else if (seq->data[0] == SEQTYPE_SCREEN) {
 		char* myout = NULL;
 		if (seq->data[1] == 1) myout = FCH("Image : %s", seq->bitmapptr);
 		else myout = FCH("Color : %s", seq->color);
-		out = FCH("- SCREEN | %s | %s", formtrans(seq), myout);
+		outAll = FCH("- SCREEN | %s | %s", out, myout);
 	}
+	free(out);
+	return outAll;
+}
 
+int InsertList(HSEQ* seq) {
+	char* out = seqch(seq);
 	HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
-	int pos = (int)SendMessageA(hlist, LB_ADDSTRING, 0, (LPARAM)(out));
+	int index = SendMessage(hlist, LB_GETCURSEL, 0, 0);
+	int pos = (int)SendMessageA(hlist, LB_INSERTSTRING, (index == -1) ? index : (index + 1), (LPARAM)(out));
 	SendMessage(hlist, LB_SETITEMDATA, pos, ListIndex);
 	ListIndex++;
 
 	if (seq->data[0] == SEQTYPE_LOOP) {
 		HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
-		int pos = (int)SendMessageA(hlist, LB_ADDSTRING, 0, (LPARAM)(FCH("} EOL ID : %d",seq->data[1])));
+		pos = (int)SendMessageA(hlist, LB_INSERTSTRING, pos + 1, (LPARAM)(FCH("} EOL ID : %d",seq->data[1])));
 		SendMessage(hlist, LB_SETITEMDATA, pos, ListIndex);
 		ListIndex++;
 	}
-
-	return;
+	return pos;
 }
 #define EOVA -100
 int AddSeqFile(int type,...) {
@@ -659,10 +662,67 @@ int AddSeqFile(int type,...) {
 		}
 	}
 	va_end(vt);
-	InsertList(FSEQ);
-	FSEQ->next = SeqTails;
-	SeqTails = FSEQ;
+	int index = InsertList(FSEQ);
+	if (FSEQ->data[0] == SEQTYPE_LOOP) {
+		HSEQ* cur = SeqHead;
+		index--;
+		if (index == 0) {
+			FSEQ->next = NULL;
+			SeqHead = FSEQ;
+			SeqTail = FSEQ;
+		}
+		else if (index > 0) for (int a = 1; a < index; a++) cur = cur->next;
+		
+		SeqFile_Count++;
+		HSEQ* loopend = (HSEQ*)malloc(sizeof(HSEQ));
+		loopend->data[0] = 10;
+		loopend->data[1] = FSEQ->data[1];
+		
+		FSEQ->next = loopend;
+		loopend->next = (cur != NULL) ? cur->next : NULL;
+		if (cur != NULL) cur->next = FSEQ;
+		else cur = FSEQ;
+		if (loopend->next == NULL)SeqTail = loopend;
+		
+		return SeqFile_Count;
+	}
+	if (index == 0) {
+		FSEQ->next = NULL;
+		SeqHead = FSEQ;
+		SeqTail = FSEQ;
+	}
+	else if(index > 0){
+		HSEQ* cur = SeqHead;
+		for (int a = 1; a < index; a++) {
+			cur = cur->next;
+		}
+		FSEQ->next = cur->next;
+		cur->next = FSEQ;
+		if (FSEQ->next == NULL) SeqTail = FSEQ;
+	}
 	return SeqFile_Count;
+}
+
+int DeleteSeqFile(int index) {
+	HSEQ* SeqSearch = SeqHead;
+	HSEQ* prev = NULL;
+	if (SeqSearch == NULL || SeqFile_Count == 0 || index < 0) {
+		MessageBoxA(hWndGlobal[IDW_MAINW], "Nothing can be delete", "Error", MB_ICONERROR | MB_OK);
+		return -1;
+	}
+//EDIT BOOKMARK
+	for (int a = 0; a < index; a++) {
+		prev = SeqSearch;
+		SeqSearch = SeqSearch->next;
+	}
+	if (prev != NULL) {
+		prev->next = SeqSearch->next;
+	}
+	_debug(FCH("Delete %d | %d | %d", SeqSearch->data[0], SeqSearch->data[1], index));
+	free(SeqSearch);
+	SeqFile_Count--;
+	ListIndex--;
+	return index;
 }
 
 #endif // !_BACKEND_H

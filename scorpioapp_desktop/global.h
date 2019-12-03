@@ -45,7 +45,8 @@ typedef struct seqfile {
 	struct seqfile* next;
 }HSEQ;
 
-HSEQ* SeqTails = NULL;
+HSEQ* SeqHead = NULL;
+HSEQ* SeqTail = NULL;
 int SeqFile_Count = 0;
 
 //MACROS
@@ -139,6 +140,9 @@ HTEXT hText_G[32] = { 0 };
 int hText_Count = 0;
 
 HSERVER hServ;
+
+//DEBUG
+#define _debug(ch) MessageBoxA(hWndGlobal[IDW_MAINW], ch, "Debug", MB_OK)
 
 
 #endif // !1

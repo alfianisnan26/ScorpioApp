@@ -271,10 +271,11 @@ INT_PTR CALLBACK Proc_FormImage(STD_PARAM_PROC) {
 	case WM_COMMAND: {
 		switch (LOWORD(wParam)) {//BUTTON
 		case IDC_OPEN: {
-			wchar_t* in = WinFileDialog(OPEN_BITMAP);
-			if (in[0]!='\0') SetDlgItemText(hWnd, IDC_NAME, in);
+			LPWSTR in = WinFileDialog(OPEN_BITMAP);
+			if (in[0]!='\0') SetDlgItemTextW(hWnd, IDC_NAME, in);
 		}
 		}
+		return (INT_PTR)TRUE;
 	}
 	default:
 		return (INT_PTR)FALSE;
@@ -705,7 +706,6 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 				else if (transition == 4) {
 					transprop1 = SendMessage(GetDlgItem(hWndGlobal[IDW_TRANS_WIPE2], IDC_COMBO1), CB_GETCURSEL, 0, 0);
 				}
-				//MessageBoxA(hWnd, FCH("type %d | form %d | formprop %d | trans %d | transdly %d | transprop1 %d | transprop2 %d ", type,form,formprop,transition,transdly,transprop1,transprop2), "DEBUG", MB_OK);
 				AddSeqFile(type, form, formprop, transition, transdly, transprop1, transprop2, EOVA);
 				EndDialog(hWnd, LOWORD(wParam));
 				break;
@@ -756,8 +756,8 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 					free(path);
 				}
 				else if (form == 1) {
-					char* path = malloc(sizeof(char) * 128);
-					int size = GetDlgItemTextA(hWndGlobal[IDW_FORM_IMAGE1], IDC_NAME, path, 128);
+					char* path = malloc(sizeof(char) * 256);
+					int size = GetDlgItemTextA(hWndGlobal[IDW_FORM_IMAGE1], IDC_NAME, path, 256);
 					path = (char*)realloc(path, sizeof(char) * size);
 					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_IMAGE, path, EOVA);
 					free(path);
@@ -832,6 +832,14 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 		case IDC_CLEAR: {
 			//SeqFile = (HSEQ*)realloc(SeqFile, 0);
 			//SeqFile_Count = 0;
+			break;
+		}
+		case IDC_DELETE: {
+			HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
+			int index = SendMessage(hlist, LB_GETCURSEL, 0, 0);
+			SendMessage(hlist, LB_DELETESTRING, (WPARAM)index, 0);
+			DeleteSeqFile(index);
+			break;
 		}
 		}
 		return (INT_PTR)TRUE;
