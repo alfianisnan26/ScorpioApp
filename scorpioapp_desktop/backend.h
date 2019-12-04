@@ -637,6 +637,7 @@ int InsertList(HSEQ* seq) {
 		SendMessage(hlist, LB_SETITEMDATA, pos, ListIndex);
 		ListIndex++;
 	}
+	SendMessage(hlist, LB_SETCURSEL, pos, 0);
 	return pos;
 }
 #define EOVA -100
@@ -669,7 +670,6 @@ int AddSeqFile(int type,...) {
 		if (index == 0) {
 			FSEQ->next = NULL;
 			SeqHead = FSEQ;
-			SeqTail = FSEQ;
 		}
 		else if (index > 0) for (int a = 1; a < index; a++) cur = cur->next;
 		
@@ -677,19 +677,18 @@ int AddSeqFile(int type,...) {
 		HSEQ* loopend = (HSEQ*)malloc(sizeof(HSEQ));
 		loopend->data[0] = 10;
 		loopend->data[1] = FSEQ->data[1];
+		loopend->data[2] = FSEQ->data[2];
 		
 		FSEQ->next = loopend;
 		loopend->next = (cur != NULL) ? cur->next : NULL;
 		if (cur != NULL) cur->next = FSEQ;
 		else cur = FSEQ;
-		if (loopend->next == NULL)SeqTail = loopend;
 		
 		return SeqFile_Count;
 	}
 	if (index == 0) {
 		FSEQ->next = NULL;
 		SeqHead = FSEQ;
-		SeqTail = FSEQ;
 	}
 	else if(index > 0){
 		HSEQ* cur = SeqHead;
@@ -698,7 +697,6 @@ int AddSeqFile(int type,...) {
 		}
 		FSEQ->next = cur->next;
 		cur->next = FSEQ;
-		if (FSEQ->next == NULL) SeqTail = FSEQ;
 	}
 	return SeqFile_Count;
 }
@@ -706,23 +704,30 @@ int AddSeqFile(int type,...) {
 int DeleteSeqFile(int index) {
 	HSEQ* SeqSearch = SeqHead;
 	HSEQ* prev = NULL;
-	if (SeqSearch == NULL || SeqFile_Count == 0 || index < 0) {
-		MessageBoxA(hWndGlobal[IDW_MAINW], "Nothing can be delete", "Error", MB_ICONERROR | MB_OK);
-		return -1;
-	}
 //EDIT BOOKMARK
 	for (int a = 0; a < index; a++) {
 		prev = SeqSearch;
 		SeqSearch = SeqSearch->next;
 	}
-	if (prev != NULL) {
+
+	_debug(FCH("Delete %s", seqch(SeqSearch)));
+
+	if (prev != NULL) { //Jika list ada ditengah
 		prev->next = SeqSearch->next;
 	}
-	_debug(FCH("Delete %d | %d | %d", SeqSearch->data[0], SeqSearch->data[1], index));
-	free(SeqSearch);
+	else { //Jika List ada di ujung Awal
+		SeqHead = SeqSearch->next;
+	}
 	SeqFile_Count--;
 	ListIndex--;
-	return index;
+	int data = SeqSearch->data[1];
+	free(SeqSearch);
+
+	if (SeqSearch->data[0] == SEQTYPE_LOOP || SeqSearch->data[0] == 10) {
+		return data;
+	}
+	
+	return -1;
 }
 
 #endif // !_BACKEND_H

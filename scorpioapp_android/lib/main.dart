@@ -5,6 +5,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'dart:core';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 const firebaseLink = "https://scorp-io.firebaseio.com";
 
@@ -140,18 +141,8 @@ class _JoinScreen extends State<JoinScreen> {
               SpeedDialChild(
                 backgroundColor: acCol,
                 child: Icon(Icons.file_download),
-                label: "Download Desktop Server",
-                onTap: () => _launchURL(
-                  "https://drive.google.com/uc?export=download&id=1V2kPPwdJSJ331XSkI2SvtXl5FQ9me50h"
-                ),
-              ),
-              SpeedDialChild(
-                backgroundColor: acCol,
-                child: Icon(Icons.file_download),
-                label: "Download APK for Android",
-                onTap: () => _launchURL(
-                  "https://drive.google.com/uc?export=download&id=1nur1n7GBRXv-NWVPuTEilZJpy94-Qu-a"
-                ),
+                label: "Download",
+                onTap: () => _dlc(context)
               ),
               SpeedDialChild(
                 backgroundColor: acCol,
@@ -161,7 +152,7 @@ class _JoinScreen extends State<JoinScreen> {
               ),
               SpeedDialChild(
                 backgroundColor: primCol,
-                child: Icon(Icons.book),
+                child: Icon(Icons.code),
                 label: "Documentation",
                 onTap: () => _launchURL(mylink),
               ),
@@ -172,6 +163,14 @@ class _JoinScreen extends State<JoinScreen> {
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => HelpPage()));
+                  }),
+              SpeedDialChild(
+                  backgroundColor: Colors.green,
+                  child: Icon(Icons.info_outline),
+                  label: "About",
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => AboutPage()));
                   }),
             ]),
         body: Stack(
@@ -256,23 +255,32 @@ class _JoinScreen extends State<JoinScreen> {
                   ),
                 ),
               )),
-              Container(height: 30,),
-              SizedBox(
-                width: 170,
-                height: 50,
-                child: RaisedButton(
-                  elevation: 15,
-                  shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30)),
-                  color: Colors.white,
-                  textColor: primCol,
-                onPressed: ()=>_scan(),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                  Image.asset("assets/img/qr.png", height: 30, color: primCol,),
+          Container(
+            height: 30,
+          ),
+          SizedBox(
+            width: 180,
+            height: 50,
+            child: RaisedButton(
+              elevation: 15,
+              shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(30)),
+              color: Colors.white,
+              textColor: primCol,
+              onPressed: () => _scan(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Image.asset(
+                    "assets/img/qr.png",
+                    height: 30,
+                    color: primCol,
+                  ),
                   Text("Scan Server ID QR"),
-                ],),
-              ),)
+                ],
+              ),
+            ),
+          )
         ]);
   }
 }
@@ -285,7 +293,7 @@ class LockScreen extends StatelessWidget {
     currentcontext = context;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.pop(context);
           },
@@ -294,50 +302,50 @@ class LockScreen extends StatelessWidget {
           foregroundColor: primCol,
         ),
         body: Stack(children: <Widget>[
-      Center(
-        child: new Image.asset("assets/img/dark_bg.jpg",
-            width: size.width, height: size.height, fit: BoxFit.cover),
-      ),
-      Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          new Image.asset(
-            "assets/img/icon.png",
-            width: 150.0,
-            height: 150.0,
+          Center(
+            child: new Image.asset("assets/img/dark_bg.jpg",
+                width: size.width, height: size.height, fit: BoxFit.cover),
           ),
-          Container(
-            height: 20.0,
-          ),
-          Container(
-              width: size.width,
-              height: 100.0,
-              child: Center(
-                child: Column(children: <Widget>[
-                  Text(
-                    "Please Wait",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.w200,
-                    ),
-                  ),
-                  Text(
-                    "Waiting other users to join Constellation",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w200,
-                    ),
-                  ),
-                ]),
-              )),
-        ],
-      ))
-    ]));
+          Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Image.asset(
+                "assets/img/icon.png",
+                width: 150.0,
+                height: 150.0,
+              ),
+              Container(
+                height: 20.0,
+              ),
+              Container(
+                  width: size.width,
+                  height: 100.0,
+                  child: Center(
+                    child: Column(children: <Widget>[
+                      Text(
+                        "Please Wait",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
+                      Text(
+                        "Waiting other users to join Constellation",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w200,
+                        ),
+                      ),
+                    ]),
+                  )),
+            ],
+          ))
+        ]));
   }
 }
 
@@ -376,4 +384,114 @@ class HelpPage extends StatelessWidget {
       body: Text("This is Help Page"),
     );
   }
+}
+
+class AboutPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("About"),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            width: size.width,
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                new Image.asset(
+                "assets/img/icon.png",
+                width: 150.0,
+                height: 150.0,),
+                SizedBox(height: 10,),
+                Text("Scorp.io",
+                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: primCol),
+                ),
+                Text("Create your own constellation",
+                  style: TextStyle(color: acCol, fontSize: 15)
+                ),
+                SizedBox(height: 20,),
+                Text(
+                  "Scorp.io is an application developed by Alfian Badrul Isnan "
+                  "and Idham Ramadito in the project of advanced programming "
+                  "subject, Computer Engineering, Engineering Faculty of Universitas Indonesia.\n\n"
+                  "Scorp.io was formed with the idea of Internet of Things "
+                  "based on the development of industry 4.0. The application "
+                  "provides clients on the Android platform and web base, "
+                  "User can download from our website.\n\n"
+                  "Scorp.io uses Firebase's Real-Time Database by Google, "
+                  "application development on the Android and Web platforms uses Google's Flutter.\n\n"
+                  "This application is suitable for forming large group configurations, making beautifuland uniformly controlled "
+                  "formations in a desktop server with Real-Time database.\n\n"
+                  "Do not hesitate to give feedback on us so that our apps "
+                  "can develop better.",
+                  style: TextStyle(fontSize: 15.0),
+                ),
+              ]),
+            ),
+          ),
+        ));
+  }
+}
+
+Future<void> _dlc(var context) async {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Select package'),
+          children: <Widget>[
+            SimpleDialogOption(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                Text("Windows Server (.zip 700 KB)"),
+                Icon(FontAwesomeIcons.windows),
+              ],),
+              onPressed: () => _launchURL("https://scorp-io.web.app/assets/dlc/Scorpio.zip"),
+            ),
+            SimpleDialogOption(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                Text("Android Client (bundle) (.apk 19.2 MB)"),
+                Icon(FontAwesomeIcons.android),
+              ],),
+              onPressed: () => _launchURL("https://scorp-io.web.app/assets/dlc/Scorpio.apk"),
+            ),
+            SimpleDialogOption(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                Text("Android Client (armeabi) (.apk 7,7 MB)"),
+                Icon(FontAwesomeIcons.android),
+              ],),
+              onPressed: () => _launchURL("https://scorp-io.web.app/assets/dlc/Scorpio_arm.apk"),
+            ),
+            SimpleDialogOption(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                Text("Android Client (arm64) (.apk 8,0 MB)"),
+                Icon(FontAwesomeIcons.android)
+              ],),
+              onPressed: () => _launchURL("https://scorp-io.web.app/assets/dlc/Scorpio_64.apk"),
+            ),
+            SimpleDialogOption(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                Text("Android Client (x86_64) (.apk 8,1 MB)"),
+                Icon(FontAwesomeIcons.android),
+              ],),
+              onPressed: () =>_launchURL("https://scorp-io.web.app/assets/dlc/Scorpio_x86_64.apk"),
+            ),
+            SizedBox(height: 40, child: Center(child: Text("To download manually, you can Access s.id/scorpiodlc")))
+          ],
+        );
+      });
 }

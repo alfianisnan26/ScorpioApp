@@ -22,6 +22,7 @@ dependencies:
   http: ^0.12.0+2
   html: ^0.14.0+3
   flutter_speed_dial: ^1.2.4
+  font_awesome_flutter: ^8.5.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -47,6 +48,7 @@ flutter:
   #  - images/a_dot_ham.jpeg
   assets:
   - assets/img/
+  - dlc/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

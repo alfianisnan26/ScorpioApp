@@ -5,6 +5,8 @@
 #include <CommCtrl.h>
 #include "qrcodegen.h"
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #pragma comment(lib, "version.lib")
 #pragma comment(lib, "winhttp.lib")
@@ -46,7 +48,6 @@ typedef struct seqfile {
 }HSEQ;
 
 HSEQ* SeqHead = NULL;
-HSEQ* SeqTail = NULL;
 int SeqFile_Count = 0;
 
 //MACROS
@@ -96,6 +97,7 @@ typedef enum {
 	IDW_CONSTELLATION,
 	IDW_SEQUENCER,
 	IDW_CMD_PAR,
+	IDW_EDIT_PAR,
 	IDW_CMD_DLY,
 	IDW_CMD_FLASH,
 	IDW_CMD_LOOP,

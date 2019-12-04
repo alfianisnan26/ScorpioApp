@@ -5,8 +5,8 @@
 #define SVN_REVISION            $WCREV$       // Highest committed revision number in the working copy
 #define SVN_TIME_NOW            $WCNOW$       // Current system date &amp; time
 
-#define BUILD_INCREMENT 1308
-#define BUILD_DATE 3
+#define BUILD_INCREMENT 1397
+#define BUILD_DATE 4
 
 #define MAJOR_VERSION 2
 #define MINOR_VERSION 27

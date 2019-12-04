@@ -364,7 +364,7 @@ class _MyAppState extends State<ConnectedScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Text("Asign Scanned Friend's ID | $serverid | $clientid"),
+                            Text("Asign Scanned Friend's ID $clientid"),
                             Container(height: 20,),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -754,7 +754,7 @@ class _MyAppState extends State<ConnectedScreen> {
             height: 20,
           ),
           SizedBox(
-            width: 180,
+            width: 200,
             height: 50,
             child: RaisedButton(
               elevation: 15,

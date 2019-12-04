@@ -80,8 +80,9 @@
 #define IDC_START                       1078
 #define IDC_FREE                        1079
 #define IDC_COLOR                       1080
-#define IDC_COLOR2                      1081
 #define IDC_TORCH                       1081
+#define IDC_STATIC1                     1090
+#define IDC_STATIC4                     1091
 #define ID_HELP_DOWNLOADCLIENT          32771
 #define ID_FILE_OPENSEQUENCE            32772
 #define ID_FILE_EXIT                    32773
@@ -121,7 +122,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        177
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1087
+#define _APS_NEXT_CONTROL_VALUE         1092
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

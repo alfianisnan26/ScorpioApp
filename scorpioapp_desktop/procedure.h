@@ -15,6 +15,23 @@ INT_PTR CALLBACK About(STD_PARAM_PROC)
 	{
 	case WM_PAINT: {
 		WinDrawText(GetVersionInfo(), hWnd, RGBBLACK, 15, FONT_STD_REG, 345, 315, 40, 40, TRUE, DT_NOCLIP | DT_SINGLELINE);
+		WinDrawText(
+			"Scorp.io is an application developed by Alfian Badrul Isnan\n"
+			"and Idham Ramadito in the project of advanced program-\n"
+			"ming subject, Computer Engineering, Engineering Faculty\nof Universitas Indonesia.\n\n"
+			"Scorp.io was formed with the idea of Internet of Things\n"
+			"based on the development of industry 4.0. The application\n"
+			"provides clients on the Android platform and web base,\n"
+			"User can download from our website.\n\n"
+			"Scorp.io uses Firebase's Real-Time Database by Google,\n"
+			"application development on the Android and Web plat-\n"
+			"forms uses Google's Flutter.\n\n"
+			"This application is suitable for forming large group con-\n"
+			"figurations, making beautifuland uniformly controlled\n"
+			"formations in a desktop server with Real-Time database.\n\n"
+			"do not hesitate to give feedback on us so that our apps\n"
+			"can develop better."
+			, hWnd, RGBBLACK, 13, FONT_STD_REG, 218, 20, 40, 40, TRUE, DT_LEFT | DT_NOCLIP);
 	}
 		 return (INT_PTR)TRUE;
 	case WM_INITDIALOG: {
@@ -824,21 +841,69 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 			EndDialog(hWnd, LOWORD(wParam));
 			break;
 		}
+		case IDC_SAVE: {
+			char* buf = (char*)calloc(sizeof(char), 516);
+			char* out = WinFileDialog(SAVE_SSF);
+			if (out == NULL) break;
+			wcstombs(buf, out, 516);
+;			out = FCH("%s.ssf", buf);
+			_debug(out);
+			FILE* fp = fopen(buf,"wb");
+			HSEQ* data = SeqHead;
+			for (int a = 0; a < SeqFile_Count; a++) {
+				//EDITBOOKMARK
+			}
+			fclose(fp);
+			free(buf);
+			free(out);
+			break;
+		}
 		case IDC_ADD: {
 			if (IsWindowVisible(hWndGlobal[IDW_CMD_PAR]))ShowWindow(hWndGlobal[IDW_CMD_PAR], SW_HIDE);
 			else ShowWindow(hWndGlobal[IDW_CMD_PAR], SW_SHOW);
 			break;
 		}
 		case IDC_CLEAR: {
-			//SeqFile = (HSEQ*)realloc(SeqFile, 0);
-			//SeqFile_Count = 0;
+			if (SeqFile_Count == 0 || ListIndex == 0) {
+				MessageBoxA(hWndGlobal[IDW_MAINW], "Nothing can be delete", "Error", MB_ICONERROR | MB_OK);
+				break;
+			}
+			HSEQ* cur = SeqHead;
+			HSEQ* prev = NULL;
+			HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
+			for (int a = 0; a < SeqFile_Count; a++) {
+				SendMessage(hlist, LB_DELETESTRING, (WPARAM)a, 0);
+				prev = cur;
+				cur = cur->next;
+				free(prev);
+			}
+			free(cur);
+			SendMessage(hlist, LB_DELETESTRING, (WPARAM)0, 0);
+			SeqHead = NULL;
+			ListIndex = 0;
+			SeqFile_Count = 0;
 			break;
 		}
 		case IDC_DELETE: {
+			if (SeqFile_Count == 0 || ListIndex == 0) {
+				MessageBoxA(hWndGlobal[IDW_MAINW], "Nothing can be delete", "Error", MB_ICONERROR | MB_OK);
+				break;
+			}
 			HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
 			int index = SendMessage(hlist, LB_GETCURSEL, 0, 0);
 			SendMessage(hlist, LB_DELETESTRING, (WPARAM)index, 0);
-			DeleteSeqFile(index);
+			index = DeleteSeqFile(index);
+			if (index >= 0) {
+				_debug(FCH("Masuk %d", index));
+				HSEQ* cur = SeqHead;
+				for (int a = 0; a < SeqFile_Count; a++) {
+					if (cur->data[1] == index) index = a;
+					cur = cur->next;
+				}
+				DeleteSeqFile(index);
+				SendMessage(hlist, LB_DELETESTRING, (WPARAM)index, 0);
+
+			}
 			break;
 		}
 		}
