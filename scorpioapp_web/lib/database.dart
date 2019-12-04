@@ -22,6 +22,22 @@ var colorScreenContext;
 String colorScreen = "#000000";
 Post globalret;
 
+int _t() {
+    var ms = (new DateTime.now()).millisecondsSinceEpoch;
+    return (ms / 1000).round();
+}
+
+void _setColor(int delay, var color) async{
+  while(color!=colorScreen){
+    if(delay < _t()){
+      colorScreen = color;
+      break;
+    }
+  }
+  return;
+
+}
+
 void fetchServerState(var server) async {
   serverid = server;
   html.window.document.documentElement.requestFullscreen();
@@ -41,9 +57,6 @@ void fetchServerState(var server) async {
     }
     if (ret.statusCode == 200) {
       var resp = ScreenVal.fromJson(json.decode((ret.body)));
-      if (serverstate == true && colorScreen != resp.testColor) {
-        colorScreen = resp.testColor;
-      }
       if (resp.state != serverstate) {
         serverstate = resp.state;
         if (resp.state == true) {
@@ -53,6 +66,7 @@ void fetchServerState(var server) async {
           //break;
         }
       }
+      if(resp.color.value!=colorScreen) _setColor(resp.color.delay, resp.color.value);
     }
   }
   return;
@@ -105,12 +119,31 @@ void writeuserFriend(var sID, var uID, String pos, int id) {
       body: jsonEncode({pos: id}));
 }
 
+class ColorData{
+  final String value;
+  final int delay;
+  ColorData({this.delay,this.value});
+  factory ColorData.fromJson(Map<String,dynamic> json){
+    return ColorData(value: json['Value'],delay: json['Delay']);
+  }
+}
+
+class TorchData{
+  final bool value;
+  final int delay;
+  TorchData({this.delay,this.value});
+  factory TorchData.fromJson(Map<String,dynamic> json){
+    return TorchData(value: json['Value'],delay: json['Delay']);
+  }
+}
+
 class ScreenVal {
   final bool state;
-  final String testColor;
-  ScreenVal({this.state, this.testColor});
+  final ColorData color;
+  final TorchData torch;
+  ScreenVal({this.state, this.color,this.torch});
   factory ScreenVal.fromJson(Map<String, dynamic> json) {
-    return ScreenVal(state: json['State'], testColor: json['TestColor']);
+    return ScreenVal(state: json['State'], color: ColorData.fromJson(json['Color']), torch: TorchData.fromJson(json['Torch']));
   }
 }
 

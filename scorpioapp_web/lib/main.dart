@@ -464,7 +464,7 @@ Future<void> _dlc(var context) async {
               onPressed: () => js.context.callMethod("open",
                   ["https://scorp-io.web.app/assets/dlc/Scorpio_x86_64.apk"]),
             ),
-            SizedBox(height: 40, child: Center(child: Text("To download manually, you can Access s.id/scorpiodlc")))
+            SizedBox(height: 40, child: Center(child: Text("To download manually,\nyou can open s.id/scorpiodlc", textAlign:TextAlign.center)))
           ],
         );
       });

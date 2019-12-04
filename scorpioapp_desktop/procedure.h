@@ -73,6 +73,8 @@ INT_PTR CALLBACK Proc_Loading(STD_PARAM_PROC) {
 	return (INT_PTR)TRUE;
 }
 
+int ping_delay = 0;
+int ping_delay_dump = 0;
 INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
@@ -85,13 +87,26 @@ INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
 	}
 	case WM_INITDIALOG: {
 		//hThread[HTH_CONST] = CreateThread(0, 0, thUpdateConst, 0, 0, 0);
+		SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_SETRANGEMIN, FALSE, 0);
+		SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_SETRANGEMAX, FALSE, 10);
 		return (INT_PTR)TRUE;
 	}
 	case WM_SHOWWINDOW: {
 		hThread[HTH_CONST] = CreateThread(0, 0, thUpdateConst, 0, 0, 0);
+		if(ping_delay==0) SetDlgItemTextA(hWnd, IDC_PING, "async");
+		else SetDlgItemTextA(hWnd, IDC_PING, FCH("%d s", ping_delay));
+		SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_SETPOS, TRUE, ping_delay);
 		return (INT_PTR)TRUE;
 	}
-
+	case WM_HSCROLL: {
+		ping_delay_dump = SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_GETPOS, 0, 0);
+		if (ping_delay_dump != ping_delay) {
+			ping_delay = ping_delay_dump;
+			if (ping_delay == 0) SetDlgItemTextA(hWnd, IDC_PING, "async");
+			else SetDlgItemTextA(hWnd, IDC_PING, FCH("%d s", ping_delay));
+		}
+		break;
+	}
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_BUTTON1: {
@@ -114,22 +129,24 @@ INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
 			ChooseColor(&cc);
 			for (int a = 14; a >= 0; a--) acrCustClr[a + 1] = acrCustClr[a];
 			acrCustClr[0] = cc.rgbResult;
-			reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/TestColor.json",hServ.server_id), FCH("\"%s\"", FCH("#%02x%02x%02x", GetRValue(cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult))));
+			_setColor(cc, ping_delay);
 			break;
 		}
 		case IDC_TORCH: {
 			torch = (torch == TRUE) ? FALSE : TRUE;
 			SetDlgItemTextA(hWnd, IDC_TORCH, (torch==TRUE)?"Turn Off Torch":"Turn On Torch");
-			reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Torch.json", hServ.server_id), (torch==TRUE)?"true":"false");
+			_setTorch(torch, ping_delay);
 			break;
 		}
 		case IDC_START: {
-			SwitchDBState();
-			if (hServ.state == FALSE) {
-				SetDlgItemTextA(hWnd, IDC_START, "Start");
-			}
-			else if (hServ.state == TRUE) {
+			hServ.state = !hServ.state;
+			if (hServ.state == TRUE) {
+				SwitchDBState(TRUE);
 				SetDlgItemTextA(hWnd, IDC_START, "Stop");
+			}
+			else if (hServ.state == FALSE) {
+				SwitchDBState(FALSE);
+				SetDlgItemTextA(hWnd, IDC_START, "Start");
 			}
 			break;
 		}
@@ -847,7 +864,6 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 			if (out == NULL) break;
 			wcstombs(buf, out, 516);
 ;			out = FCH("%s.ssf", buf);
-			_debug(out);
 			FILE* fp = fopen(buf,"wb");
 			HSEQ* data = SeqHead;
 			for (int a = 0; a < SeqFile_Count; a++) {
@@ -894,7 +910,6 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 			SendMessage(hlist, LB_DELETESTRING, (WPARAM)index, 0);
 			index = DeleteSeqFile(index);
 			if (index >= 0) {
-				_debug(FCH("Masuk %d", index));
 				HSEQ* cur = SeqHead;
 				for (int a = 0; a < SeqFile_Count; a++) {
 					if (cur->data[1] == index) index = a;

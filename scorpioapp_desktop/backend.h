@@ -31,7 +31,7 @@ wchar_t* L(const char* charArray)
 char* FCH(const char * format, ...)
 //FORMAT CHAR
 {
-	char* str = (char*)calloc(sizeof(char), 128);
+	char* str = (char*)calloc(sizeof(char), 516);
 	va_list argptr;
 	va_start(argptr, format);
 	int ret = vsprintf(str, format, argptr);
@@ -52,7 +52,7 @@ char* FINTCH(int x) {
 
 LPCWSTR LFCH(const char* format, ...)
 {
-	char* str = (char*)calloc(sizeof(char), 128);
+	char* str = (char*)calloc(sizeof(char), 516);
 	va_list argptr;
 	va_start(argptr, format);
 	int ret = vsprintf(str, format, argptr);
@@ -269,9 +269,16 @@ BOOL inetCheck(HWND h) {
 						"\"ServerName\":\"%ls\","
 						"\"Type\":%d,"
 						"\"MaxC\":%d,"
-						"\"Global\":{\"State\":false,"
-							"\"Torch\":false,"
-							"\"TestColor\":\"#000000\"}}",
+						"\"Global\":"
+							"{\"State\":false,"
+							"\"Torch\":{"
+								"\"Value\":false,"
+								"\"Delay\":0},"
+							"\"Color\":{"
+								"\"Value\":\"#000000\","
+								"\"Delay\":0}"
+							"}"
+						"}",
 						info->tm_mday, hServ.server_name, hServ.type, hServ.max_client);
 					r = reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d.json", ServerID), send);
 					ShowWindow(dlg, SW_HIDE);
@@ -302,9 +309,8 @@ BOOL inetCheck(HWND h) {
 	return FALSE;
 }
 
-void SwitchDBState() {
-	hServ.state = !hServ.state;
-	char* ret = reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/State.json", hServ.server_id), (hServ.state) ? "true" : "false");
+void SwitchDBState(BOOL state) {
+	reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/State.json", hServ.server_id), (state==TRUE)?"true":"false");
 	return;
 }
 
@@ -710,8 +716,6 @@ int DeleteSeqFile(int index) {
 		SeqSearch = SeqSearch->next;
 	}
 
-	_debug(FCH("Delete %s", seqch(SeqSearch)));
-
 	if (prev != NULL) { //Jika list ada ditengah
 		prev->next = SeqSearch->next;
 	}
@@ -728,6 +732,22 @@ int DeleteSeqFile(int index) {
 	}
 	
 	return -1;
+}
+
+int _setColor(CHOOSECOLOR cc, int delay) {
+	if (delay != 0)delay += time(NULL);
+	reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Color.json", hServ.server_id),
+		FCH("{\"Value\":\"%s\","
+			"\"Delay\":%d}", FCH("#%02x%02x%02x", GetRValue(cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)),delay));
+	return delay;
+}
+
+int _setTorch(BOOL state, int delay) {
+	if (delay != 0)delay += time(NULL);
+	reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Torch.json", hServ.server_id),
+		FCH("{\"Value\":%s,"
+			"\"Delay\":%d}", (torch == TRUE) ? "true" : "false", delay));
+	return delay;
 }
 
 #endif // !_BACKEND_H

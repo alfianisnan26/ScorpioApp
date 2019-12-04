@@ -27,6 +27,35 @@ var colorScreenContext;
 String colorScreen = "#000000";
 Post globalret;
 
+int _t() {
+  var ms = (new DateTime.now()).millisecondsSinceEpoch;
+  return (ms / 1000).round();
+}
+
+void _setColor(int delay, var color) async {
+  while (color != colorScreen) {
+    if (delay < _t()) {
+      colorScreen = color;
+      break;
+    }
+  }
+  return;
+}
+
+void _setTorch(int delay, bool state) async {
+  while (torch != state) {
+    if (delay < _t()) {
+      torch = state;
+      break;
+    }
+    if (torch == true)
+      TorchCompat.turnOn();
+    else
+      TorchCompat.turnOff();
+  }
+  return;
+}
+
 void fetchServerState(var server) async {
   serverid = server;
   while (clientState) {
@@ -45,18 +74,6 @@ void fetchServerState(var server) async {
     }
     if (ret.statusCode == 200) {
       var resp = ScreenVal.fromJson(json.decode((ret.body)));
-      if (serverstate == true) {
-        if (colorScreen != resp.testColor) {
-          colorScreen = resp.testColor;
-        }
-        if (torch != resp.torch) {
-          torch = resp.torch;
-          if (torch == true)
-            TorchCompat.turnOn();
-          else
-            TorchCompat.turnOff();
-        }
-      }
       if (resp.state != serverstate) {
         serverstate = resp.state;
         if (resp.state == true) {
@@ -66,6 +83,8 @@ void fetchServerState(var server) async {
           //break;
         }
       }
+      if(resp.color.value!=colorScreen) _setColor(resp.color.delay, resp.color.value);
+      if(resp.torch.value!=torch) _setTorch(resp.torch.delay, resp.torch.value);
     }
   }
   return;
@@ -119,16 +138,31 @@ void writeuserFriend(var sID, var uID, String pos, int id) {
       body: jsonEncode({pos: id}));
 }
 
+class ColorData{
+  final String value;
+  final int delay;
+  ColorData({this.delay,this.value});
+  factory ColorData.fromJson(Map<String,dynamic> json){
+    return ColorData(value: json['Value'],delay: json['Delay']);
+  }
+}
+
+class TorchData{
+  final bool value;
+  final int delay;
+  TorchData({this.delay,this.value});
+  factory TorchData.fromJson(Map<String,dynamic> json){
+    return TorchData(value: json['Value'],delay: json['Delay']);
+  }
+}
+
 class ScreenVal {
   final bool state;
-  final String testColor;
-  final bool torch;
-  ScreenVal({this.state, this.testColor, this.torch});
+  final ColorData color;
+  final TorchData torch;
+  ScreenVal({this.state, this.color,this.torch});
   factory ScreenVal.fromJson(Map<String, dynamic> json) {
-    return ScreenVal(
-        state: json['State'],
-        testColor: json['TestColor'],
-        torch: json['Torch']);
+    return ScreenVal(state: json['State'], color: ColorData.fromJson(json['Color']), torch: TorchData.fromJson(json['Torch']));
   }
 }
 
@@ -163,7 +197,7 @@ class _ColorScreen extends State<ColorScreen> {
   final time = Duration(milliseconds: 500);
   double brightness;
 
-  void getBright() async{
+  void getBright() async {
     brightness = await Screen.brightness;
     Screen.setBrightness(1.0);
   }
@@ -312,7 +346,8 @@ class _MyAppState extends State<ConnectedScreen> {
                   boxF.clear();
                   boxFState = true;
                   boxF.text = ret;
-                  writeuserFriend(serverid, clientid, "F", int.parse(boxF.text));
+                  writeuserFriend(
+                      serverid, clientid, "F", int.parse(boxF.text));
                 },
               )),
           Container(
@@ -336,7 +371,8 @@ class _MyAppState extends State<ConnectedScreen> {
                   boxB.clear();
                   boxBState = true;
                   boxB.text = ret;
-                  writeuserFriend(serverid, clientid, "B", int.parse(boxB.text));
+                  writeuserFriend(
+                      serverid, clientid, "B", int.parse(boxB.text));
                 },
               )),
         ],
@@ -357,7 +393,7 @@ class _MyAppState extends State<ConnectedScreen> {
                     borderRadius:
                         BorderRadius.circular(12.0)), //this right here
                 child: Container(
-                    height: (usertype==2)?220.0:120.0,
+                    height: (usertype == 2) ? 220.0 : 120.0,
                     width: 200.0,
                     child: Center(
                       child: Column(
@@ -365,7 +401,9 @@ class _MyAppState extends State<ConnectedScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Text("Asign Scanned Friend's ID $clientid"),
-                            Container(height: 20,),
+                            Container(
+                              height: 20,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -421,9 +459,13 @@ class _MyAppState extends State<ConnectedScreen> {
                                     )),
                               ],
                             ),
-                            Container(height: (usertype==2)?20:0,),
+                            Container(
+                              height: (usertype == 2) ? 20 : 0,
+                            ),
                             square(ret, usertype),
-                            Container(height: 10,),
+                            Container(
+                              height: 10,
+                            ),
                           ]),
                     )));
           });
