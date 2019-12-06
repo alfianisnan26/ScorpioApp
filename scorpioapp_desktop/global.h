@@ -35,9 +35,6 @@ LONG BitmapWidth, BitmapHeight;
 
 COLORREF acrCustClr[16];
 WNDPROC StaticWndProc = NULL;
-HINTERNET  hSession = NULL,
-hConnect = NULL,
-hRequest = NULL;
 
 //Sequence Struct:
 typedef struct seqfile {
@@ -77,9 +74,8 @@ int SeqFile_Count = 0;
 
 //OTHER MACROS
 #define TEXT_SET_STRING 1
-#define GET 1
-#define PUT 2
-#define DEL 3
+#define GET FALSE
+#define PUT TRUE
 #define WinHTTPFlag2 INTERNET_DEFAULT_HTTPS_PORT, 0
 #define WinHTTPFlag3 NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE
 #define WM_LOADING_DESTROY 0xF2F6
@@ -125,6 +121,7 @@ typedef struct server_data {
 	int max_client;
 	BOOL state;
 	LPWSTR server_name;
+	int offset;
 }HSERVER;
 
 typedef struct h_text {
@@ -142,6 +139,25 @@ HTEXT hText_G[32] = { 0 };
 int hText_Count = 0;
 
 HSERVER hServ;
+
+struct http_h {
+	HINTERNET Req;
+	HINTERNET Con;
+	LPCWSTR domain;
+	LPCWSTR subdomain;
+	int port;
+	BOOL state;
+};
+
+HINTERNET Session;
+
+typedef struct http_h* HTTP;
+
+HTTP http_thUpdate = NULL;
+HTTP http_switchDB = NULL;
+HTTP http_setColor = NULL;
+HTTP http_setTorch = NULL;
+HTTP unixTime = NULL;
 
 //DEBUG
 #define _debug(ch) MessageBoxA(hWndGlobal[IDW_MAINW], ch, "Debug", MB_OK)

@@ -85,6 +85,7 @@
 #define IDC_STATIC4                     1091
 #define IDC_PING                        1092
 #define IDC_SLIDER_PING                 1093
+#define IDC_SPIN1                       1094
 #define ID_HELP_DOWNLOADCLIENT          32771
 #define ID_FILE_OPENSEQUENCE            32772
 #define ID_FILE_EXIT                    32773
@@ -124,7 +125,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        177
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1094
+#define _APS_NEXT_CONTROL_VALUE         1095
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

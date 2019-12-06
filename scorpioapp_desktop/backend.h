@@ -66,9 +66,81 @@ LPCWSTR LFCH(const char* format, ...)
 	free(str);
 	return L(buf);
 } // LONG FORMAT CHAR
+#define PORT_HTTP	INTERNET_DEFAULT_HTTP_PORT
+#define PORT_HTTPS	INTERNET_DEFAULT_HTTPS_PORT
 
-LPSTR reqHTTP(int state, const char* domain, const char* subdomain, const char* data) {
+HTTP makeHTTP(const int state, const char* domain, const char* subdomain, const int port) {
+	while (!Session) Session = WinHttpOpen(STD_WINHTTP_FLAG);
+	HTTP h = (HTTP)malloc(sizeof(struct http_h));
+	h->domain = L(domain);
+	h->subdomain = L(subdomain);
+	h->port = port;
+	h->state = state;
+	while (!Session) Session = WinHttpOpen(STD_WINHTTP_FLAG);
+	if (Session) h->Con = WinHttpConnect(Session, h->domain, h->port, 0);
+	if (h->Con) h->Req = WinHttpOpenRequest(h->Con, (h->state == PUT) ? L"PUT" : L"GET", h->subdomain, WinHTTPFlag3);
+	return h;
+}
 
+HTTP updateHTTP(HTTP h, const int state, const char* subdomain) {
+	WinHttpCloseHandle(h->Req);
+	h->state = state;
+	h->subdomain = subdomain;
+	h->Req = WinHttpOpenRequest(h->Con, (h->state == PUT) ? L"PUT" : L"GET", h->subdomain, WinHTTPFlag3);
+	return h;
+}
+
+void freeHTTP(HTTP h) {
+	WinHttpCloseHandle(h->Con);
+	WinHttpCloseHandle(h->Req);
+	free(h);
+	return;
+}
+
+LPCSTR http(HTTP h, const char* data) {
+	LPSTR pszOutBuffer = NULL;
+	BOOL  bResults = FALSE;
+	DWORD dwSize = 0;
+	DWORD dwBytesWritten = 0;
+	DWORD dwDownloaded = 0;
+	if (h->Req) bResults = WinHttpSendRequest(h->Req, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, (h->state == GET) ? 0 : (DWORD)strlen(data), 0);
+	if (bResults && h->state == PUT) bResults = WinHttpWriteData(h->Req, data, (DWORD)strlen(data), &dwBytesWritten);
+	if (bResults) bResults = WinHttpReceiveResponse(h->Req, NULL);
+	if (bResults) do {
+		dwSize = 0;
+		WinHttpQueryDataAvailable(h->Req, &dwSize);
+		pszOutBuffer = (LPSTR)malloc(dwSize + 1);
+		ZeroMemory(pszOutBuffer, dwSize + 1);
+		if (WinHttpReadData(h->Req, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded)) break;
+	} while (dwSize > 0);
+	return pszOutBuffer;
+}
+
+LPCSTR pokeHTTP(int state, const char* domain, const char* subdomain, int port, const char* data) {
+	HTTP h = makeHTTP(state, domain, subdomain, port);
+	LPCSTR out = http(h, data);
+	freeHTTP(h);
+	return out;
+}
+
+int getUnix() {
+	if (unixTime == NULL) {
+		unixTime = makeHTTP(GET, "showcase.linx.twenty57.net", "/UnixTime/tounix?date=now", 8081);
+		unixTime->port = 8081;
+	}
+	char* out = http(unixTime, 0);
+	if (out == NULL) {
+		return time(NULL);
+	}
+	int unix = atoi(out);
+	if (unix < 1575561217) {
+		return time(NULL);
+	}
+	free(out);
+	return unix;
+}
+/*
+LPSTR reqHTTP_old(int state, const char* domain, const char* subdomain, const char* data) {
 	LPSTR pszOutBuffer;
 	BOOL  bResults = FALSE;
 	DWORD dwSize = 0;
@@ -77,8 +149,6 @@ LPSTR reqHTTP(int state, const char* domain, const char* subdomain, const char* 
 	char * st = calloc(sizeof(char*),8);
 	if (state == GET) strcpy(st, "GET");
 	else if (state == PUT || state == DEL) strcpy(st, "PUT");
-
-	// Specify an HTTP server.
 	if (hSession) hConnect = WinHttpConnect(hSession, L(domain), WinHTTPFlag2);
 	else {
 #ifndef _NO_INET_ERROR 
@@ -87,7 +157,6 @@ LPSTR reqHTTP(int state, const char* domain, const char* subdomain, const char* 
 		free(st);
 		return 0;
 	}
-	// Create an HTTP request handle.
 	if (hConnect) hRequest = WinHttpOpenRequest(hConnect, L(st), L(subdomain), WinHTTPFlag3);
 	else {
 #ifndef _NO_INET_ERROR 
@@ -106,15 +175,11 @@ LPSTR reqHTTP(int state, const char* domain, const char* subdomain, const char* 
 	}
 	if (bResults && state == PUT) bResults = WinHttpWriteData(hRequest, data, (DWORD)strlen(data), &dwBytesWritten);
 	else if (bResults && state == DEL) bResults = WinHttpWriteData(hRequest, NULL, NULL, NULL);
-	// End the request.
 	if (bResults) bResults = WinHttpReceiveResponse(hRequest, NULL);
-
-	// Keep checking for data until there is nothing left.
 	if (bResults)
 	{
 		do
 		{
-			// Check for available data.
 			dwSize = 0;
 			if (!WinHttpQueryDataAvailable(hRequest, &dwSize))
 			{
@@ -124,8 +189,6 @@ LPSTR reqHTTP(int state, const char* domain, const char* subdomain, const char* 
 				free(st);
 				return 0;
 			}
-
-			// Allocate space for the buffer.
 			pszOutBuffer = (LPSTR)malloc(dwSize + 1);
 			if (!pszOutBuffer)
 			{
@@ -137,9 +200,7 @@ LPSTR reqHTTP(int state, const char* domain, const char* subdomain, const char* 
 			}
 			else
 			{
-				// Read the data.
 				ZeroMemory(pszOutBuffer, dwSize + 1);
-
 				if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer,
 					dwSize, &dwDownloaded)) {
 #ifndef _NO_INET_ERROR 
@@ -151,21 +212,17 @@ LPSTR reqHTTP(int state, const char* domain, const char* subdomain, const char* 
 					free(st);
 					return pszOutBuffer;
 				}
-
-				// Free the memory allocated to the buffer.
 				free(pszOutBuffer);
 			}
 		} while (dwSize > 0);
 	}
-
-
-	// Report any errors.
 #ifndef _NO_INET_ERROR 
 	if (!bResults) MessageBox(0, LFCH("Error %u has Occured", GetLastError()), L"Error", MB_OK | MB_ICONWARNING);
 #endif
 	free(st);
 	return 0;
 }
+*/
 
 LPWSTR WinFileDialog(int state) {
 	OPENFILENAME ofn;
@@ -192,7 +249,7 @@ LPWSTR WinFileDialog(int state) {
 DWORD WINAPI thUpdateConst() {
 	while (IsWindowVisible(hWndGlobal[IDW_CONSTELLATION])) {
 		Sleep(10);
-		char* r = reqHTTP(GET, DB_DOMAIN, FCH("/ServerID/%d/User.json", hServ.server_id), 0);
+		char* r = http(http_thUpdate, 0);
 		SetWindowText(GetDlgItem(hWndGlobal[IDW_CONSTELLATION], IDC_EDIT1), L(r));
 		free(r);
 	}
@@ -213,17 +270,17 @@ void FreeSession() {
 		ShowWindow(hWndGlobal[IDW_TEXTVIEWER], SW_ERASE);
 		hWndGlobal[IDW_TEXTVIEWER] = NULL;
 	}
-	if (hSession) {
-		reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d.json", hServ.server_id), "null");
-		WinHttpCloseHandle(hRequest);
-		WinHttpCloseHandle(hConnect);
-		WinHttpCloseHandle(hSession);
-		hSession = NULL;
+	if (Session) {
+		HTTP fs = makeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d.json", hServ.server_id),PORT_HTTPS);
+		http(fs, "null");
+		freeHTTP(fs);
+		WinHttpCloseHandle(Session);
+		Session = NULL;
 	}
 }
 
 BOOL hSessionCheck(HWND h) {
-	if (hSession != NULL) {
+	if (Session != NULL) {
 		int r = MessageBox(h, L"Server is Running, Do You Want to Reset Server?", L"Alert", MB_OKCANCEL | MB_ICONWARNING);
 		if (r == IDOK) {
 			FreeSession();
@@ -240,8 +297,8 @@ BOOL inetCheck(HWND h) {
 	HMENU hMenu = GetMenu(hWndGlobal[IDW_MAINW]);
 	HWND dlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_LOADING), h, Proc_Loading);
 	while (1) {
-		while (!hSession) hSession = WinHttpOpen(STD_WINHTTP_FLAG);
-		if (!hSession) {
+		while (!Session) Session = WinHttpOpen(STD_WINHTTP_FLAG);
+		if (!Session) {
 			ShowWindow(dlg, SW_HIDE);
 			int r = MessageBox(h, L"Please Connect To The Internet Properly", L"No Connection", MB_RETRYCANCEL | MB_ICONWARNING);
 			if (r == IDRETRY)
@@ -261,8 +318,10 @@ BOOL inetCheck(HWND h) {
 				struct tm* info;
 				time(&rawtime);
 				info = localtime(&rawtime);
-				char* r = reqHTTP(GET, DB_DOMAIN, FCH("/ServerID/%d/Date.json", ServerID), 0);
-				int val = strcmp(FINTCH(info->tm_mday), r);
+				char* r = pokeHTTP(GET, DB_DOMAIN, FCH("/ServerID/%d/Date.json",ServerID), PORT_HTTPS, 0);
+				int val;
+				if (r != NULL)val = strcmp(FINTCH(info->tm_mday), r);
+				else val = 1;
 				if (val != 0){ // ZERO SERVER ID
 					hServ.state = FALSE;
 					char* send = FCH("{\"Date\":%d,"
@@ -280,7 +339,7 @@ BOOL inetCheck(HWND h) {
 							"}"
 						"}",
 						info->tm_mday, hServ.server_name, hServ.type, hServ.max_client);
-					r = reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d.json", ServerID), send);
+					r = pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d.json", ServerID),PORT_HTTPS, send);
 					ShowWindow(dlg, SW_HIDE);
 					MessageBox(h, LFCH("Server Created with ID : %d\nTo Show QR Code or Text, click Window Menu, ServerID", ServerID, hServ.server_name), L"Server Created", MB_OK);
 					hServ.server_id = ServerID;
@@ -289,6 +348,7 @@ BOOL inetCheck(HWND h) {
 					EnableMenuItem(hMenu, ID_FILE_CREATESERVER, MF_DISABLED);
 					EnableMenuItem(hMenu, ID_FILE_RESET, MF_ENABLED);
 					torch = FALSE;
+					hServ.offset = updateOffset();
 					if (!hWndGlobal[IDW_CONSTELLATION]) {
 						hWndGlobal[IDW_CONSTELLATION] = CreateDialog(hInst, MAKEINTRESOURCE(IDD_CONSTELLATION), hWndGlobal[IDW_MAINW], Proc_Const);
 						EnableMenuItem(hMenu, ID_CONSTED, MF_ENABLED);
@@ -301,7 +361,7 @@ BOOL inetCheck(HWND h) {
 			if (a >= 8) {
 				ShowWindow(dlg, SW_HIDE);
 				MessageBox(h, L"Can't Create The Server, Please Check Your Connection or Restart Scorp.io", L"Error", MB_ICONERROR | MB_OK);
-				hSession = NULL;
+				Session = NULL;
 			}
 			return (a < 8) ? TRUE : FALSE;
 		}
@@ -310,7 +370,7 @@ BOOL inetCheck(HWND h) {
 }
 
 void SwitchDBState(BOOL state) {
-	reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/State.json", hServ.server_id), (state==TRUE)?"true":"false");
+	pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/State.json", hServ.server_id), PORT_HTTPS, (state == TRUE) ? "true" : "false");
 	return;
 }
 
@@ -735,20 +795,27 @@ int DeleteSeqFile(int index) {
 }
 
 int _setColor(CHOOSECOLOR cc, int delay) {
-	if (delay != 0)delay += time(NULL);
-	reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Color.json", hServ.server_id),
+	if (delay != 0)delay += (time(NULL)+hServ.offset);
+	pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Color.json", hServ.server_id), PORT_HTTPS,
 		FCH("{\"Value\":\"%s\","
-			"\"Delay\":%d}", FCH("#%02x%02x%02x", GetRValue(cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)),delay));
+			"\"Delay\":%d}", FCH("#%02x%02x%02x", GetRValue(cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)),delay), hServ.server_id);
 	return delay;
 }
 
 int _setTorch(BOOL state, int delay) {
-	if (delay != 0)delay += time(NULL);
-	reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Torch.json", hServ.server_id),
+	if (delay != 0)delay += (time(NULL) + hServ.offset);
+	pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Torch.json", hServ.server_id), PORT_HTTPS,
 		FCH("{\"Value\":%s,"
-			"\"Delay\":%d}", (torch == TRUE) ? "true" : "false", delay));
+			"\"Delay\":%d}", (torch == TRUE) ? "true" : "false", delay), hServ.server_id);
 	return delay;
 }
+
+int updateOffset() {
+	int offset = 0;
+	offset = getUnix() - (int)time(NULL);
+	return offset;
+}
+
 
 #endif // !_BACKEND_H
 

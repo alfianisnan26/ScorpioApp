@@ -1,42 +1,50 @@
 ﻿  Name of the file:  E:\Programming\ScorpioApp\scorpioapp_desktop\Build_increment.h
-  Date of Revision:  4
+  Date of Revision:  6
   Scorpio.c
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(108,85): warning C4047: 'function': 'DWORD' differs in levels of indirection from 'void *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(108,85): warning C4024: 'WinHttpWriteData': different types for formal and actual parameter 3
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(199,8): warning C4033: 'thUpdateConst' must return a value
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(258,34): warning C4013: 'GetRandomRange' undefined; assuming extern returning int
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(342,18): warning C4013: 'GetVersionInfoEx' undefined; assuming extern returning int
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(356,48): warning C4047: 'function': 'DWORD' differs in levels of indirection from 'void *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(356,48): warning C4024: 'GetFileVersionInfoW': different types for formal and actual parameter 2
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(386,18): warning C4101: 'clrBK': unreferenced local variable
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(414,18): warning C4101: 'clrBK': unreferenced local variable
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(484,6): warning C4101: 'out': unreferenced local variable
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(483,6): warning C4101: 'i': unreferenced local variable
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(738,36): warning C4244: '+=': conversion from 'time_t' to 'int', possible loss of data
-E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(746,36): warning C4244: '+=': conversion from 'time_t' to 'int', possible loss of data
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(88,26): warning C4133: '=': incompatible types - from 'const char *' to 'LPCWSTR'
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(133,20): warning C4244: 'return': conversion from 'time_t' to 'int', possible loss of data
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(137,20): warning C4244: 'return': conversion from 'time_t' to 'int', possible loss of data
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(131,1): warning C4090: 'initializing': different 'const' qualifiers
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(256,8): warning C4033: 'thUpdateConst' must return a value
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(252,1): warning C4090: 'initializing': different 'const' qualifiers
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(315,34): warning C4013: 'GetRandomRange' undefined; assuming extern returning int
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(342,87): warning C4090: '=': different 'const' qualifiers
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(351,33): warning C4013: 'updateOffset' undefined; assuming extern returning int
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(321,1): warning C4090: 'initializing': different 'const' qualifiers
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(402,18): warning C4013: 'GetVersionInfoEx' undefined; assuming extern returning int
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(416,48): warning C4047: 'function': 'DWORD' differs in levels of indirection from 'void *'
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(416,48): warning C4024: 'GetFileVersionInfoW': different types for formal and actual parameter 2
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(446,18): warning C4101: 'clrBK': unreferenced local variable
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(474,18): warning C4101: 'clrBK': unreferenced local variable
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(544,6): warning C4101: 'out': unreferenced local variable
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(543,6): warning C4101: 'i': unreferenced local variable
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(798,51): warning C4244: '+=': conversion from 'time_t' to 'int', possible loss of data
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(801,140): warning C4020: 'pokeHTTP': too many actual parameters
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(806,53): warning C4244: '+=': conversion from 'time_t' to 'int', possible loss of data
+E:\Programming\ScorpioApp\scorpioapp_desktop\backend.h(809,80): warning C4020: 'pokeHTTP': too many actual parameters
 E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(17,65): warning C4133: 'function': incompatible types - from 'unsigned short [13]' to 'LPCSTR'
 E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(34,38): warning C4133: 'function': incompatible types - from 'unsigned short [13]' to 'LPCSTR'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(95,56): warning C4113: 'DWORD (__stdcall *)()' differs in parameter lists from 'LPTHREAD_START_ROUTINE'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(213,55): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(711,74): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(723,81): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(749,78): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(755,77): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(766,82): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(704,11): warning C4102: 'ENTERKEY': unreferenced label
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(865,21): warning C4133: 'function': incompatible types - from 'char *' to 'const wchar_t *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(863,1): warning C4133: 'initializing': incompatible types - from 'LPWSTR' to 'char *'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(949,98): warning C4047: '=': 'HWND' differs in levels of indirection from 'INT_PTR'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1101,98): warning C4133: 'function': incompatible types - from 'unsigned short [18]' to 'LPCSTR'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1102,102): warning C4133: 'function': incompatible types - from 'unsigned short [18]' to 'LPCSTR'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1103,116): warning C4133: 'function': incompatible types - from 'unsigned short [18]' to 'LPCSTR'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1114,99): warning C4047: '=': 'HWND' differs in levels of indirection from 'INT_PTR'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1159,68): warning C4133: 'function': incompatible types - from 'unsigned short [20]' to 'LPCSTR'
-E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1183,196): warning C4133: 'function': incompatible types - from 'LPCSTR' to 'LPCWSTR'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(96,56): warning C4113: 'DWORD (__stdcall *)()' differs in parameter lists from 'LPTHREAD_START_ROUTINE'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(214,55): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(712,74): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(724,81): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(750,78): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(756,77): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(767,82): warning C4133: 'function': incompatible types - from 'bool *' to 'BOOL *'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(705,11): warning C4102: 'ENTERKEY': unreferenced label
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(870,21): warning C4133: 'function': incompatible types - from 'char *' to 'const wchar_t *'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(868,1): warning C4133: 'initializing': incompatible types - from 'LPWSTR' to 'char *'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(961,98): warning C4047: '=': 'HWND' differs in levels of indirection from 'INT_PTR'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1113,98): warning C4133: 'function': incompatible types - from 'unsigned short [18]' to 'LPCSTR'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1114,102): warning C4133: 'function': incompatible types - from 'unsigned short [18]' to 'LPCSTR'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1115,116): warning C4133: 'function': incompatible types - from 'unsigned short [18]' to 'LPCSTR'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1126,99): warning C4047: '=': 'HWND' differs in levels of indirection from 'INT_PTR'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1171,68): warning C4133: 'function': incompatible types - from 'unsigned short [20]' to 'LPCSTR'
+E:\Programming\ScorpioApp\scorpioapp_desktop\procedure.h(1195,196): warning C4133: 'function': incompatible types - from 'LPCSTR' to 'LPCWSTR'
 E:\Programming\ScorpioApp\scorpioapp_desktop\Scorpio.c(45,15): warning C4244: 'function': conversion from 'time_t' to 'unsigned int', possible loss of data
   Generating code
-  4 of 94 functions ( 4.3%) were compiled, the rest were copied from previous compilation.
+  2 of 100 functions ( 2.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    2 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Scorpio.vcxproj -> E:\Programming\ScorpioApp\scorpioapp_desktop\Release\Scorpio.exe

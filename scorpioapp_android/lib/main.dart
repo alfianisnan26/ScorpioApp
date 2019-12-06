@@ -425,7 +425,7 @@ class AboutPage extends StatelessWidget {
                   "User can download from our website.\n\n"
                   "Scorp.io uses Firebase's Real-Time Database by Google, "
                   "application development on the Android and Web platforms uses Google's Flutter.\n\n"
-                  "This application is suitable for forming large group configurations, making beautifuland uniformly controlled "
+                  "This application is suitable for forming large group configurations, making beautiful and uniformly controlled "
                   "formations in a desktop server with Real-Time database.\n\n"
                   "Do not hesitate to give feedback on us so that our apps "
                   "can develop better.",

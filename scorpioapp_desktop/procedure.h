@@ -86,7 +86,8 @@ INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
 		return (INT_PTR)TRUE;
 	}
 	case WM_INITDIALOG: {
-		//hThread[HTH_CONST] = CreateThread(0, 0, thUpdateConst, 0, 0, 0);
+		if (http_thUpdate == NULL) http_thUpdate = makeHTTP(GET, DB_DOMAIN, FCH("/ServerID/%d/User.json", hServ.server_id), PORT_HTTPS);
+		else updateHTTP(http_thUpdate, GET, FCH("/ServerID/%d/User.json", hServ.server_id));
 		SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_SETRANGEMIN, FALSE, 0);
 		SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_SETRANGEMAX, FALSE, 10);
 		return (INT_PTR)TRUE;
@@ -114,7 +115,7 @@ INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
 			break;
 		}
 		case IDC_FREE: {
-			reqHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/User.json", hServ.server_id), "null");
+			pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/User.json", hServ.server_id), PORT_HTTPS,"null");
 			break;
 		}
 		case IDC_COLOR: {
@@ -851,6 +852,7 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 		SendMessage(hWndGlobal[IDW_COMBO_SEQ1], CB_ADDSTRING, 0, (LPARAM)L"Screen Color");
 		return (INT_PTR)TRUE;
 	}
+//BOOKMARK Buat WM_COmmand penyusunan list
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_CLOSE: {
