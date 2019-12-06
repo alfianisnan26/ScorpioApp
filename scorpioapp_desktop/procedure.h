@@ -641,6 +641,29 @@ INT_PTR CALLBACK Proc_CMD_Screen(STD_PARAM_PROC) {
 	return (INT_PTR)TRUE;
 }
 
+void dienub(HWND hWnd) {
+	if (ListIndex == 0 || ListIndex == 1) {
+		EnableWindow(GetDlgItem(hWnd, IDC_MU), FALSE);
+		EnableWindow(GetDlgItem(hWnd, IDC_MD), FALSE);
+	}
+	else if (ListIndex > 1) {
+		int sel = SendMessageA(GetDlgItem(hWnd, IDC_LIST), LB_GETCURSEL, 0, 0);
+		if (sel == 0) {
+			EnableWindow(GetDlgItem(hWnd, IDC_MU), FALSE);
+			EnableWindow(GetDlgItem(hWnd, IDC_MD), TRUE);
+		}
+		else if (sel == ListIndex - 1) {
+			EnableWindow(GetDlgItem(hWnd, IDC_MU), TRUE);
+			EnableWindow(GetDlgItem(hWnd, IDC_MD), FALSE);
+		}
+		else {
+			EnableWindow(GetDlgItem(hWnd, IDC_MU), TRUE);
+			EnableWindow(GetDlgItem(hWnd, IDC_MD), TRUE);
+		}
+	}
+	return;
+}
+
 INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
@@ -716,6 +739,7 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 				}
 				if (SendMessage(GetDlgItem(hWndGlobal[IDW_CMD_DLY], IDC_COMBO1), CB_GETCURSEL, 0, 0) == 1) num *= 1000;
 				AddSeqFile(SEQTYPE_DELAY, num, EOVA);
+				dienub(hWndGlobal[IDW_SEQUENCER]);
 				EndDialog(hWnd, LOWORD(wParam));
 				break;
 			}
@@ -742,6 +766,7 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 					transprop1 = SendMessage(GetDlgItem(hWndGlobal[IDW_TRANS_WIPE2], IDC_COMBO1), CB_GETCURSEL, 0, 0);
 				}
 				AddSeqFile(type, form, formprop, transition, transdly, transprop1, transprop2, EOVA);
+				dienub(hWndGlobal[IDW_SEQUENCER]);
 				EndDialog(hWnd, LOWORD(wParam));
 				break;
 			}
@@ -759,6 +784,7 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 					break;
 				}
 				AddSeqFile(SEQTYPE_LOOP, loopid, count, EOVA);
+				dienub(hWndGlobal[IDW_SEQUENCER]);
 				EndDialog(hWnd, LOWORD(wParam));
 				break;
 			}
@@ -803,6 +829,7 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_COLOR, path, EOVA);
 					free(path);
 				}
+				dienub(hWndGlobal[IDW_SEQUENCER]);
 				EndDialog(hWnd, LOWORD(wParam));
 				break;
 			}
@@ -830,11 +857,13 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 }
 
 INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
+	//BOOKMARK EDIT BUTTON
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
 	{
 	case WM_SHOWWINDOW: {
 		if (IsWindowVisible(hWndGlobal[IDW_WIZ])) ShowWindow(hWndGlobal[IDW_WIZ], SW_HIDE);
+		dienub(hWnd);
 		return (INT_PTR)TRUE;
 	}
 	case WM_PAINT: {
@@ -855,6 +884,13 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 //BOOKMARK Buat WM_COmmand penyusunan list
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
+		case IDC_MU: {//UP BUTTON PRESSED
+			
+			break;
+		}
+		case IDC_MD: {//DOWN BUTTON PRESSED
+			break;
+		}
 		case IDC_CLOSE: {
 			if(IsWindowVisible(hWndGlobal[IDW_CMD_PAR]))ShowWindow(hWndGlobal[IDW_CMD_PAR], SW_HIDE);
 			EndDialog(hWnd, LOWORD(wParam));
@@ -867,8 +903,8 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 			wcstombs(buf, out, 516);
 ;			out = FCH("%s.ssf", buf);
 			FILE* fp = fopen(buf,"wb");
-			HSEQ* data = SeqHead;
-			for (int a = 0; a < SeqFile_Count; a++) {
+			HSEQ* data = SEQ.Head;
+			for (int a = 0; a < SEQ.Count; a++) {
 				//EDITBOOKMARK
 			}
 			fclose(fp);
@@ -877,19 +913,20 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 			break;
 		}
 		case IDC_ADD: {
+			hWndGlobal[IDW_SEQUENCER] = hWnd;
 			if (IsWindowVisible(hWndGlobal[IDW_CMD_PAR]))ShowWindow(hWndGlobal[IDW_CMD_PAR], SW_HIDE);
 			else ShowWindow(hWndGlobal[IDW_CMD_PAR], SW_SHOW);
 			break;
 		}
 		case IDC_CLEAR: {
-			if (SeqFile_Count == 0 || ListIndex == 0) {
+			if (SEQ.Count == 0 || ListIndex == 0) {
 				MessageBoxA(hWndGlobal[IDW_MAINW], "Nothing can be delete", "Error", MB_ICONERROR | MB_OK);
 				break;
 			}
-			HSEQ* cur = SeqHead;
+			HSEQ* cur = SEQ.Head;
 			HSEQ* prev = NULL;
 			HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
-			for (int a = 0; a < SeqFile_Count; a++) {
+			for (int a = 0; a < SEQ.Count; a++) {
 				SendMessage(hlist, LB_DELETESTRING, (WPARAM)a, 0);
 				prev = cur;
 				cur = cur->next;
@@ -897,13 +934,15 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 			}
 			free(cur);
 			SendMessage(hlist, LB_DELETESTRING, (WPARAM)0, 0);
-			SeqHead = NULL;
+			SEQ.Head = NULL;
+			SEQ.Tail = NULL;
 			ListIndex = 0;
-			SeqFile_Count = 0;
+			SEQ.Count = 0;
+			dienub(hWnd);
 			break;
 		}
 		case IDC_DELETE: {
-			if (SeqFile_Count == 0 || ListIndex == 0) {
+			if (SEQ.Count == 0 || ListIndex == 0) {
 				MessageBoxA(hWndGlobal[IDW_MAINW], "Nothing can be delete", "Error", MB_ICONERROR | MB_OK);
 				break;
 			}
@@ -912,16 +951,21 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 			SendMessage(hlist, LB_DELETESTRING, (WPARAM)index, 0);
 			index = DeleteSeqFile(index);
 			if (index >= 0) {
-				HSEQ* cur = SeqHead;
-				for (int a = 0; a < SeqFile_Count; a++) {
+				HSEQ* cur = SEQ.Head;
+				for (int a = 0; a < SEQ.Count; a++) {
 					if (cur->data[1] == index) index = a;
 					cur = cur->next;
 				}
 				DeleteSeqFile(index);
 				SendMessage(hlist, LB_DELETESTRING, (WPARAM)index, 0);
-
 			}
+			dienub(hWnd);
 			break;
+		}
+		}
+		switch (HIWORD(wParam)) {
+		case LBN_SELCHANGE: {
+			dienub(hWnd);
 		}
 		}
 		return (INT_PTR)TRUE;

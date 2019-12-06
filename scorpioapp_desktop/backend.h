@@ -707,8 +707,8 @@ int InsertList(HSEQ* seq) {
 	return pos;
 }
 #define EOVA -100
-int AddSeqFile(int type,...) {
-	SeqFile_Count++;
+int AddSeqFile(int type,...) { //Implementasi LinkedList Queue
+	SEQ.Count++;
 	HSEQ* FSEQ = (HSEQ*)malloc(sizeof(HSEQ));
 	FSEQ->data[0] = type;
 	int a = 0;
@@ -731,15 +731,17 @@ int AddSeqFile(int type,...) {
 	va_end(vt);
 	int index = InsertList(FSEQ);
 	if (FSEQ->data[0] == SEQTYPE_LOOP) {
-		HSEQ* cur = SeqHead;
+		HSEQ* cur = SEQ.Head;
 		index--;
 		if (index == 0) {
 			FSEQ->next = NULL;
-			SeqHead = FSEQ;
+			FSEQ->prev = NULL;
+			SEQ.Head = FSEQ;
+			SEQ.Tail = FSEQ;
 		}
 		else if (index > 0) for (int a = 1; a < index; a++) cur = cur->next;
 		
-		SeqFile_Count++;
+		SEQ.Count++;
 		HSEQ* loopend = (HSEQ*)malloc(sizeof(HSEQ));
 		loopend->data[0] = 10;
 		loopend->data[1] = FSEQ->data[1];
@@ -747,28 +749,38 @@ int AddSeqFile(int type,...) {
 		
 		FSEQ->next = loopend;
 		loopend->next = (cur != NULL) ? cur->next : NULL;
-		if (cur != NULL) cur->next = FSEQ;
-		else cur = FSEQ;
-		
-		return SeqFile_Count;
+		if (cur != NULL) {//FSEQ not in head
+			cur->next = FSEQ;
+			FSEQ->prev = cur;
+		}
+		else {//FSEQ in Head
+			cur = FSEQ;
+			FSEQ->prev = NULL;
+		}
+		if (FSEQ->next == NULL) SEQ.Tail = FSEQ;
+		return SEQ.Count;
 	}
 	if (index == 0) {
 		FSEQ->next = NULL;
-		SeqHead = FSEQ;
+		FSEQ->prev = NULL;
+		SEQ.Head = FSEQ;
+		SEQ.Tail = FSEQ;
 	}
 	else if(index > 0){
-		HSEQ* cur = SeqHead;
+		HSEQ* cur = SEQ.Head;
 		for (int a = 1; a < index; a++) {
 			cur = cur->next;
 		}
 		FSEQ->next = cur->next;
+		FSEQ->prev = cur;
 		cur->next = FSEQ;
+		if (FSEQ->next == NULL) SEQ.Tail = FSEQ;
 	}
-	return SeqFile_Count;
+	return SEQ.Count;
 }
 
 int DeleteSeqFile(int index) {
-	HSEQ* SeqSearch = SeqHead;
+	HSEQ* SeqSearch = SEQ.Head;
 	HSEQ* prev = NULL;
 //EDIT BOOKMARK
 	for (int a = 0; a < index; a++) {
@@ -778,11 +790,15 @@ int DeleteSeqFile(int index) {
 
 	if (prev != NULL) { //Jika list ada ditengah
 		prev->next = SeqSearch->next;
+		if (SeqSearch->next != NULL)SeqSearch->next->prev = prev;
+		else SEQ.Tail = prev;
 	}
 	else { //Jika List ada di ujung Awal
-		SeqHead = SeqSearch->next;
+		SEQ.Head = SeqSearch->next;
+		SEQ.Head->prev = NULL;
+		if (SEQ.Head->next == NULL) SEQ.Tail = SEQ.Head;
 	}
-	SeqFile_Count--;
+	SEQ.Count--;
 	ListIndex--;
 	int data = SeqSearch->data[1];
 	free(SeqSearch);

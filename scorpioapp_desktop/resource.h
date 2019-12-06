@@ -54,10 +54,13 @@
 #define IDC_CANCEL                      1013
 #define IDC_DELETE                      1014
 #define IDC_CLEAR                       1015
+#define IDC_CLEAR2                      1016
+#define IDC_MU                          1016
 #define IDC_NEW                         1017
 #define IDC_CLOSE                       1018
 #define IDC_COMBO2                      1019
 #define IDC_SAVE                        1019
+#define IDC_MD                          1020
 #define IDC_EDIT3                       1022
 #define IDC_EDIT5                       1023
 #define IDC_EDIT4                       1026
@@ -85,7 +88,6 @@
 #define IDC_STATIC4                     1091
 #define IDC_PING                        1092
 #define IDC_SLIDER_PING                 1093
-#define IDC_SPIN1                       1094
 #define ID_HELP_DOWNLOADCLIENT          32771
 #define ID_FILE_OPENSEQUENCE            32772
 #define ID_FILE_EXIT                    32773

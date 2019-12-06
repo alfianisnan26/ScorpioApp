@@ -42,10 +42,16 @@ typedef struct seqfile {
 	char* bitmapptr;
 	char* color;
 	struct seqfile* next;
+	struct seqfile* prev;
 }HSEQ;
 
-HSEQ* SeqHead = NULL;
-int SeqFile_Count = 0;
+typedef struct seq_h {
+	HSEQ* Head;
+	HSEQ* Tail;
+	int Count;
+}SEQH;
+
+SEQH SEQ;
 
 //MACROS
 //COLOR

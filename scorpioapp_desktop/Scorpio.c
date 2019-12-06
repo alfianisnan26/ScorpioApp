@@ -106,6 +106,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
 	InitConsole();
 #endif // DEBUG
+	SEQ.Head = NULL;
+	SEQ.Tail = NULL;
+	SEQ.Count = 0;
 
 	hWndGlobal = (HWND*)calloc(sizeof(HWND), (int)IDW_MAX);
     UNREFERENCED_PARAMETER(hPrevInstance);
