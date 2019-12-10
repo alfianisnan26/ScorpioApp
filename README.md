@@ -1,15 +1,15 @@
 # [Scorp.io](https://scorp-io.web.app) - Create your own constellation
 Proyek Akhir Proglan UTS
-- Nama Proyek	: UnoDare!
+- Nama Proyek	: Scorp.io
 - Jurusan   	: Teknik Komputer
 - Instansi  	: Universitas Indonesia
-- Dibuat    	: Bulan Oktober 2019
+- Dibuat    	: Bulan November - Desember 2019
 - Kelompok  	:
 	- Alfian Badrul Isnan | 1806148643
 	- Idham Ramadito | 1806200293
 ## Deskripsi
 Scorp.io merupakan aplikasi multiplatform berbasis Windows untuk server, Android dan Progressive Web Application (PWA) untuk client.
-Fungsi utama dari dibentuknya aplikasi ini adalah untuk membentuk sebuah rangkaian ìkonstelasiî dari perangkat seluler untuk membentuk sebuah formasi tertentu yang ditunjukan oleh warna pada layar dan lampu flash (khusus aplikasi android) yang dikontrol melalui satu sumber server.
+Fungsi utama dari dibentuknya aplikasi ini adalah untuk membentuk sebuah rangkaian ‚Äúkonstelasi‚Äù dari perangkat seluler untuk membentuk sebuah formasi tertentu yang ditunjukan oleh warna pada layar dan lampu flash (khusus aplikasi android) yang dikontrol melalui satu sumber server.
 Nama Scorp.io merupakan kata yang diambil dari nama konstelasi bintang yang merepresentasikan hubungan antar bintang sehingga terbentuk konstelasi.
 Sistem kerja dari aplikasi ini sedikit mirip dengan kahoot.com
 ## Quick Start
