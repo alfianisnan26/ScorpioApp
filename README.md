@@ -1,9 +1,9 @@
 # [Scorp.io](https://scorp-io.web.app) - Create your own constellation
 Proyek Akhir Proglan UTS
-- Nama Proyek	: UnoDare!
+- Nama Proyek	: Scorp.io
 - Jurusan   	: Teknik Komputer
 - Instansi  	: Universitas Indonesia
-- Dibuat    	: Bulan Oktober 2019
+- Dibuat    	: Bulan November - Desember 2019
 - Kelompok  	:
 	- Alfian Badrul Isnan | 1806148643
 	- Idham Ramadito | 1806200293
