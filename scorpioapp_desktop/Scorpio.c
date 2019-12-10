@@ -4,8 +4,9 @@
 #define APSTUDIO_READONLY_SYMBOLS
 #define _CRT_SECURE_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-//#define _NO_WND_SPLASH
+#define _NO_WND_SPLASH
 #define _NO_INET_ERROR
+#define DEBUG
 //#define _DEBUG_FIREBASE
 
 
@@ -42,6 +43,10 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 //   PURPOSE: Saves instance handle and creates main window
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
+	AddFontResourceExA("resources\\Product Sans Bold Italic.ttf",FR_PRIVATE,NULL);
+	AddFontResourceExA("resources\\Product Sans Bold.ttf", FR_PRIVATE, NULL);
+	AddFontResourceExA("resources\\Product Sans Italic.ttf", FR_PRIVATE, NULL);
+	AddFontResourceExA("resources\\Product Sans Regular.ttf", FR_PRIVATE, NULL);
 	srand(time(0));
 	ZeroMemory(hWndGlobal, sizeof(hWndGlobal));
 	hInst = hInstance; // Store instance handle in our global variable

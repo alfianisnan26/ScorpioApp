@@ -31,19 +31,14 @@ wchar_t* L(const char* charArray)
 char* FCH(const char * format, ...)
 //FORMAT CHAR
 {
-	char* str = (char*)calloc(sizeof(char), 516);
+	char* str = (char*)malloc(sizeof(char)* 2048);
 	va_list argptr;
 	va_start(argptr, format);
 	int ret = vsprintf(str, format, argptr);
-	str[ret] = '\0';
 	va_end(argptr);
-	char* buf = (char*)calloc(sizeof(char), ret + 1);
-	buf[ret] = '\0';
-	for (int a = 0; a < ret; a++) {
-		buf[a] = str[a];
-	}
-	free(str);
-	return buf;
+	str = (char*)realloc(str, sizeof(char) * ret + 1);
+	str[ret] = '\0';
+	return str;
 } // FORMAT CHAR
 
 char* FINTCH(int x) {
@@ -139,98 +134,14 @@ int getUnix() {
 	free(out);
 	return unix;
 }
-/*
-LPSTR reqHTTP_old(int state, const char* domain, const char* subdomain, const char* data) {
-	LPSTR pszOutBuffer;
-	BOOL  bResults = FALSE;
-	DWORD dwSize = 0;
-	DWORD dwBytesWritten = 0;
-	DWORD dwDownloaded = 0;
-	char * st = calloc(sizeof(char*),8);
-	if (state == GET) strcpy(st, "GET");
-	else if (state == PUT || state == DEL) strcpy(st, "PUT");
-	if (hSession) hConnect = WinHttpConnect(hSession, L(domain), WinHTTPFlag2);
-	else {
-#ifndef _NO_INET_ERROR 
-		MessageBox(0, L"Error WinHttpConnect", L"Error", MB_OK | MB_ICONWARNING);
-#endif
-		free(st);
-		return 0;
-	}
-	if (hConnect) hRequest = WinHttpOpenRequest(hConnect, L(st), L(subdomain), WinHTTPFlag3);
-	else {
-#ifndef _NO_INET_ERROR 
-		MessageBox(0, L"Error WinHttpOpenRequest", L"Error", MB_OK | MB_ICONWARNING);
-#endif
-		free(st);
-		return 0;
-	}
-	if (hRequest) bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, (state == GET) ? 0 : (DWORD)strlen(data), 0);
-	else {
-#ifndef _NO_INET_ERROR 
-		MessageBox(0, L"Error WinHttpSendRequest", L"Error", MB_OK | MB_ICONWARNING);
-#endif
-		free(st);
-		return 0;
-	}
-	if (bResults && state == PUT) bResults = WinHttpWriteData(hRequest, data, (DWORD)strlen(data), &dwBytesWritten);
-	else if (bResults && state == DEL) bResults = WinHttpWriteData(hRequest, NULL, NULL, NULL);
-	if (bResults) bResults = WinHttpReceiveResponse(hRequest, NULL);
-	if (bResults)
-	{
-		do
-		{
-			dwSize = 0;
-			if (!WinHttpQueryDataAvailable(hRequest, &dwSize))
-			{
-#ifndef _NO_INET_ERROR 
-				MessageBox(0, L"Error WinHttpQueryDataAvailable", L"Error", MB_OK | MB_ICONWARNING);
-#endif
-				free(st);
-				return 0;
-			}
-			pszOutBuffer = (LPSTR)malloc(dwSize + 1);
-			if (!pszOutBuffer)
-			{
-#ifndef _NO_INET_ERROR 
-				MessageBox(0, L"Out of Memmory", L"Error", MB_OK | MB_ICONWARNING);
-#endif
-				free(st);
-				return 0;
-			}
-			else
-			{
-				ZeroMemory(pszOutBuffer, dwSize + 1);
-				if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer,
-					dwSize, &dwDownloaded)) {
-#ifndef _NO_INET_ERROR 
-					MessageBox(0, LFCH("Error %u in WinHttpReadData", GetLastError()), L"Error", MB_OK | MB_ICONWARNING);
-#endif
-					return 0;
-				}
-				else {
-					free(st);
-					return pszOutBuffer;
-				}
-				free(pszOutBuffer);
-			}
-		} while (dwSize > 0);
-	}
-#ifndef _NO_INET_ERROR 
-	if (!bResults) MessageBox(0, LFCH("Error %u has Occured", GetLastError()), L"Error", MB_OK | MB_ICONWARNING);
-#endif
-	free(st);
-	return 0;
-}
-*/
 
 LPWSTR WinFileDialog(int state) {
 	OPENFILENAME ofn;
-	char szFile[256];
+	LPWSTR szFile[1024];
 	ZeroMemory(&ofn, sizeof(ofn));
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = NULL;
-	ofn.lpstrFile = (LPWSTR)szFile;
+	ofn.lpstrFile = szFile;
 	ofn.lpstrFile[0] = '\0';
 	ofn.nMaxFile = sizeof(szFile);
 	if(state == OPEN_SSF || state == SAVE_SSF) ofn.lpstrFilter = L"Scorp.io Sequence File (.*ssf)\0*.ssf*\0All Files\0*.*\0";
@@ -348,7 +259,6 @@ BOOL inetCheck(HWND h) {
 					EnableMenuItem(hMenu, ID_FILE_CREATESERVER, MF_DISABLED);
 					EnableMenuItem(hMenu, ID_FILE_RESET, MF_ENABLED);
 					torch = FALSE;
-					hServ.offset = updateOffset();
 					if (!hWndGlobal[IDW_CONSTELLATION]) {
 						hWndGlobal[IDW_CONSTELLATION] = CreateDialog(hInst, MAKEINTRESOURCE(IDD_CONSTELLATION), hWndGlobal[IDW_MAINW], Proc_Const);
 						EnableMenuItem(hMenu, ID_CONSTED, MF_ENABLED);
@@ -630,9 +540,9 @@ void InitAllMenu(HWND hWnd) {
 #define SEQTYPE_SCREEN 3
 #define SEQTYPE_SCREEN_COLOR -1
 #define SEQTYPE_SCREEN_IMAGE -2
-int ListIndex = 0;
+#define SEQTYPE_LOOPEND 4
 
-char* seqch(HSEQ* seq) {
+char* seqch(const HSEQ* seq) {
 	char* form = NULL;
 	char* trans = NULL;
 	switch (seq->data[1]) {
@@ -685,24 +595,30 @@ char* seqch(HSEQ* seq) {
 		else myout = FCH("Color : %s", seq->color);
 		outAll = FCH("- SCREEN | %s | %s", out, myout);
 	}
+	else if (seq->data[0] == SEQTYPE_LOOPEND) {
+		outAll = FCH("} EOL ID : %d", seq->data[1]);
+	}
 	free(out);
 	return outAll;
 }
 
-int InsertList(HSEQ* seq) {
+HSEQ* GetSeqFromIndex(int index) {
+	if (SEQ.Count == 0) return NULL;
+	else {
+		HSEQ* rec = SEQ.Head;
+		for (int a = 0; a <= SEQ.Count-1; a++) {
+			if (a == index) return rec;
+			rec = rec->next;
+		}
+	}
+	return NULL;
+}
+
+int InsertList(HSEQ* seq, int index) {
 	char* out = seqch(seq);
 	HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
-	int index = SendMessage(hlist, LB_GETCURSEL, 0, 0);
-	int pos = (int)SendMessageA(hlist, LB_INSERTSTRING, (index == -1) ? index : (index + 1), (LPARAM)(out));
-	SendMessage(hlist, LB_SETITEMDATA, pos, ListIndex);
-	ListIndex++;
-
-	if (seq->data[0] == SEQTYPE_LOOP) {
-		HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
-		pos = (int)SendMessageA(hlist, LB_INSERTSTRING, pos + 1, (LPARAM)(FCH("} EOL ID : %d",seq->data[1])));
-		SendMessage(hlist, LB_SETITEMDATA, pos, ListIndex);
-		ListIndex++;
-	}
+	int pos = (int)SendMessageA(hlist, LB_INSERTSTRING, (index == -1) ? 0 : (index + 1), (LPARAM)(out));
+	SendMessage(hlist, LB_SETITEMDATA, pos, SEQ.Count-1);
 	SendMessage(hlist, LB_SETCURSEL, pos, 0);
 	return pos;
 }
@@ -729,89 +645,110 @@ int AddSeqFile(int type,...) { //Implementasi LinkedList Queue
 		}
 	}
 	va_end(vt);
-	int index = InsertList(FSEQ);
-	if (FSEQ->data[0] == SEQTYPE_LOOP) {
-		HSEQ* cur = SEQ.Head;
-		index--;
-		if (index == 0) {
-			FSEQ->next = NULL;
-			FSEQ->prev = NULL;
-			SEQ.Head = FSEQ;
-			SEQ.Tail = FSEQ;
-		}
-		else if (index > 0) for (int a = 1; a < index; a++) cur = cur->next;
-		
-		SEQ.Count++;
-		HSEQ* loopend = (HSEQ*)malloc(sizeof(HSEQ));
-		loopend->data[0] = 10;
-		loopend->data[1] = FSEQ->data[1];
-		loopend->data[2] = FSEQ->data[2];
-		
-		FSEQ->next = loopend;
-		loopend->next = (cur != NULL) ? cur->next : NULL;
-		if (cur != NULL) {//FSEQ not in head
-			cur->next = FSEQ;
-			FSEQ->prev = cur;
-		}
-		else {//FSEQ in Head
-			cur = FSEQ;
-			FSEQ->prev = NULL;
-		}
-		if (FSEQ->next == NULL) SEQ.Tail = FSEQ;
-		return SEQ.Count;
-	}
-	if (index == 0) {
+	int index = LIST_CURSEL;
+	if (SEQ.Head == NULL) {//No Data at all
 		FSEQ->next = NULL;
 		FSEQ->prev = NULL;
-		SEQ.Head = FSEQ;
+		SEQ.Head = SEQ.Tail = FSEQ;
+	}
+	else if (index < 0 && SEQ.Head != NULL && SEQ.Tail != NULL) {//Not Click a List
+		SEQ.Tail->next = FSEQ;
+		FSEQ->prev = SEQ.Tail;
+		FSEQ->next = NULL;
 		SEQ.Tail = FSEQ;
 	}
-	else if(index > 0){
-		HSEQ* cur = SEQ.Head;
-		for (int a = 1; a < index; a++) {
-			cur = cur->next;
+	else if(index >= 0){
+		HSEQ* dump = GetSeqFromIndex(index);
+		if (dump->next == NULL) {
+			FSEQ->next = NULL;
+			SEQ.Tail = FSEQ;
 		}
-		FSEQ->next = cur->next;
-		FSEQ->prev = cur;
-		cur->next = FSEQ;
-		if (FSEQ->next == NULL) SEQ.Tail = FSEQ;
+		else {
+			FSEQ->next = dump->next;
+			dump->next->prev = FSEQ;
+		}
+		dump->next = FSEQ;
+		FSEQ->prev = dump;
+	}
+	InsertList(FSEQ, index);
+	if (FSEQ->data[0] == SEQTYPE_LOOP) {
+		SEQ.Count++;
+		HSEQ* loopend = (HSEQ*)malloc(sizeof(HSEQ));
+		loopend->data[0] = SEQTYPE_LOOPEND;
+		loopend->data[1] = FSEQ->data[1];
+		loopend->prev = FSEQ;
+		loopend->next = FSEQ->next;
+		FSEQ->next = loopend;
+		InsertList(loopend, index + 1);
 	}
 	return SEQ.Count;
 }
 
-int DeleteSeqFile(int index) {
-	HSEQ* SeqSearch = SEQ.Head;
-	HSEQ* prev = NULL;
-//EDIT BOOKMARK
-	for (int a = 0; a < index; a++) {
-		prev = SeqSearch;
-		SeqSearch = SeqSearch->next;
+HSEQ* GetLoopFriend(HSEQ* loop, int* index) {
+	int thisindex = *index;
+	if (loop != NULL) {
+		int LoopID = loop->data[1];
+		if (loop->data[0] == SEQTYPE_LOOP) {
+			while (loop->next != NULL) {
+				thisindex++;
+				loop = loop->next;
+				if (loop->data[1] == LoopID) {
+					*index = thisindex;
+					return loop;
+				}
+			}
+		}
+		else if (loop->data[0] == SEQTYPE_LOOPEND) {
+			while (loop->prev != NULL) {
+				thisindex--;
+				loop = loop->prev;
+				if (loop->data[1] == LoopID) {
+					*index = thisindex;
+					return loop;
+				}
+			}
+		}
 	}
+	*index = 0;
+	return NULL;
+}
 
-	if (prev != NULL) { //Jika list ada ditengah
-		prev->next = SeqSearch->next;
-		if (SeqSearch->next != NULL)SeqSearch->next->prev = prev;
-		else SEQ.Tail = prev;
+BOOL DeleteSeqFile(HSEQ* seq) {
+	if (seq != NULL) {
+		if (seq->next == NULL && seq->prev == NULL) {//Last One Item
+			free(seq);
+			SEQ.Count = 0;
+			SEQ.Head = NULL;
+			SEQ.Tail = NULL;
+			return TRUE;
+		}
+		else if (seq->prev == NULL) { //is in Head
+			SEQ.Count--;
+			seq->next->prev = NULL;
+			SEQ.Head = seq->next;
+			free(seq);
+			return TRUE;
+		}
+		else if (seq->next == NULL) {//is in tails
+			SEQ.Count--;
+			seq->prev->next = NULL;
+			SEQ.Tail = seq->prev;
+			free(seq);
+			return TRUE;
+		}
+		else {//Is in body
+			SEQ.Count--;
+			seq->prev->next = seq->next;
+			seq->next->prev = seq->prev;
+			free(seq);
+			return TRUE;
+		}
 	}
-	else { //Jika List ada di ujung Awal
-		SEQ.Head = SeqSearch->next;
-		SEQ.Head->prev = NULL;
-		if (SEQ.Head->next == NULL) SEQ.Tail = SEQ.Head;
-	}
-	SEQ.Count--;
-	ListIndex--;
-	int data = SeqSearch->data[1];
-	free(SeqSearch);
-
-	if (SeqSearch->data[0] == SEQTYPE_LOOP || SeqSearch->data[0] == 10) {
-		return data;
-	}
-	
-	return -1;
+	return FALSE;
 }
 
 int _setColor(CHOOSECOLOR cc, int delay) {
-	if (delay != 0)delay += (time(NULL)+hServ.offset);
+	if (delay != 0)delay += time(NULL);
 	pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Color.json", hServ.server_id), PORT_HTTPS,
 		FCH("{\"Value\":\"%s\","
 			"\"Delay\":%d}", FCH("#%02x%02x%02x", GetRValue(cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)),delay), hServ.server_id);
@@ -819,19 +756,260 @@ int _setColor(CHOOSECOLOR cc, int delay) {
 }
 
 int _setTorch(BOOL state, int delay) {
-	if (delay != 0)delay += (time(NULL) + hServ.offset);
+	if (delay != 0)delay += time(NULL);
 	pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Torch.json", hServ.server_id), PORT_HTTPS,
 		FCH("{\"Value\":%s,"
 			"\"Delay\":%d}", (torch == TRUE) ? "true" : "false", delay), hServ.server_id);
 	return delay;
 }
 
-int updateOffset() {
-	int offset = 0;
-	offset = getUnix() - (int)time(NULL);
-	return offset;
+void dispose() {
+	if (disposestate == FALSE) {
+		FreeSession();
+		WinHttpCloseHandle(Session);
+		RemoveFontResourceExA("resources\\Product Sans Bold Italic.ttf", FR_PRIVATE, NULL);
+		RemoveFontResourceExA("resources\\Product Sans Bold.ttf", FR_PRIVATE, NULL);
+		RemoveFontResourceExA("resources\\Product Sans Italic.ttf", FR_PRIVATE, NULL);
+		RemoveFontResourceExA("resources\\Product Sans Regular.ttf", FR_PRIVATE, NULL);
+		disposestate == TRUE;
+	}
+	return;
 }
 
+void dienub(HWND hWnd) {
+	int sel = LIST_CURSEL;
+	if (SEQ.Count == 0 || sel == -1) {
+		EnableWindow(GetDlgItem(hWnd, IDC_DELETE), FALSE);
+		EnableWindow(GetDlgItem(hWnd, IDC_CLEAR), FALSE);
+	}
+	else {
+		EnableWindow(GetDlgItem(hWnd, IDC_DELETE), TRUE);
+		EnableWindow(GetDlgItem(hWnd, IDC_CLEAR), TRUE);
+	}
+	if (SEQ.Count == 0 || SEQ.Count == 1 || sel == -1) {
+		EnableWindow(GetDlgItem(hWnd, IDC_MU), FALSE);
+		EnableWindow(GetDlgItem(hWnd, IDC_MD), FALSE);
+	}
+	else if (SEQ.Count > 1) {
+		HSEQ* dump = GetSeqFromIndex(sel);
+		if (sel == 0) {
+			EnableWindow(GetDlgItem(hWnd, IDC_MU), FALSE);
+			EnableWindow(GetDlgItem(hWnd, IDC_MD), TRUE);
+		}
+		else if (sel == SEQ.Count - 1) {
+			EnableWindow(GetDlgItem(hWnd, IDC_MU), TRUE);
+			EnableWindow(GetDlgItem(hWnd, IDC_MD), FALSE);
+		}
+		else {
+			EnableWindow(GetDlgItem(hWnd, IDC_MU), TRUE);
+			EnableWindow(GetDlgItem(hWnd, IDC_MD), TRUE);
+		}
+	}
+	return;
+}
+
+void SeqMoveUp(HWND hWnd) {
+	int index = LIST_CURSEL;
+	//BOOKMARK LINKEDLIST SHIFT
+	HSEQ* dump = GetSeqFromIndex(index);
+	HSEQ* up = dump->prev;
+	d(FCH("dump\t: %s\nup\t: %s", seqch(dump), seqch(up)));
+	if (up->prev == NULL) {//Will go to head;
+		d("Turn Head");
+		SEQ.Head = dump;
+		dump->prev = NULL;
+		d("Success");
+	}
+	else {
+		d("Assign dump prev");
+		dump->prev = up->prev; //assign dump prev
+		up->prev->next = dump;
+		d("Success");
+	}
+
+	if (dump->next == NULL) {//is tails
+		d("Up Goes Tail");
+		SEQ.Tail = up;
+		up->next = NULL;
+		d("Success");
+	}
+	else {
+		d("Assign Up Next");
+		up->next = dump->next; //assign up next
+		dump->next->prev = up;
+		d("Success");
+	}
+	d("Assign Swap");
+	dump->next = up; //assign dump next
+	up->prev = dump; //assign up prev
+	d("Success");
+	HWND list = GetDlgItem(hWnd, IDC_LIST);
+	char* prevstr = malloc(sizeof(char) * SendMessageA(list, LB_GETTEXTLEN, index - 1, 0));
+	SendMessageA(list, LB_GETTEXT, index - 1, prevstr);
+	SendMessageA(list, LB_DELETESTRING, index - 1, 0);
+	SendMessageA(list, LB_INSERTSTRING, index, prevstr);
+	free(prevstr);
+	dienub(hWnd);
+	return;
+}
+
+
+void SeqMoveDown(HWND hWnd) {
+	int index = LIST_CURSEL;
+	//BOOKMARK LINKEDLIST SHIFT
+	HSEQ* dump = GetSeqFromIndex(index);
+	HSEQ* down = dump->next;
+	d(FCH("dump\t: %s\nup\t: %s", seqch(dump), seqch(down)));
+	if (down->next == NULL) {//is tails
+		d("Turn Tail");
+		SEQ.Tail = dump;
+		dump->next = NULL;
+		d("Success");
+	}
+	else {
+		d("Assign dump Next");
+		down->next->prev = dump;
+		dump->next = down->next;
+		d("Success");
+	}
+
+	if (dump->prev == NULL) {//Will go to head;
+		d("Down goes Head");
+		SEQ.Head = down;
+		down->prev = NULL;
+		d("Success");
+	}
+	else {
+		d("Assign down prev");
+		dump->prev->next = down;
+		down->prev = dump->prev;
+		d("Success");
+	}
+	d("Assign Swap");
+	dump->prev = down;
+	down->next = dump;
+	d("Success");
+
+	HWND list = GetDlgItem(hWnd, IDC_LIST);
+	char* prevstr = malloc(sizeof(char) * SendMessageA(list, LB_GETTEXTLEN, index + 1, 0));
+	SendMessageA(list, LB_GETTEXT, index + 1, prevstr);
+	SendMessageA(list, LB_DELETESTRING, index + 1, 0);
+	SendMessageA(list, LB_INSERTSTRING, index, prevstr);
+	free(prevstr);
+	dienub(hWnd);
+	return;
+}
+
+//BOOKMARK SAVEFILE
+BOOL SaveSeqFile(char* dir) {
+	FILE* seqfile = fopen(dir, "wb");
+	if(seqfile == NULL) return FALSE;
+	HSEQ* cur = SEQ.Head;
+	fwrite(&SEQ.Count, sizeof(int), 1, seqfile);
+	for (int a = 0; a < SEQ.Count; a++) {
+		fwrite(cur->data, sizeof(int), 9, seqfile);
+		int lenbmp = 0;
+		if (cur->bitmapptr != NULL) {
+			d(cur->bitmapptr);
+			lenbmp = strlen(cur->bitmapptr);
+			fwrite(&lenbmp, sizeof(int), 1, seqfile);
+			fwrite(cur->bitmapptr, sizeof(char), lenbmp + 1, seqfile);
+		}
+		else {
+			fwrite(&lenbmp, sizeof(int), 1, seqfile);
+		}
+		int lencol = 0;
+		if (cur->color != NULL) {
+			lencol = strlen(cur->color);
+			fwrite(&lencol, sizeof(int), 1, seqfile);
+			fwrite(cur->color, sizeof(char), lencol + 1, seqfile);
+		}
+		else {
+			fwrite(&lencol, sizeof(int), 1, seqfile);
+		}
+		cur = cur->next;
+	}
+	fclose(seqfile);
+	return TRUE;
+}
+
+BOOL AskForSave(HWND hWnd) {
+	if (SEQ.Count > 0) {
+		int out = MessageBoxA(hWnd, "Would you like to save current sequence first?", "Scorp.io Sequencer", MB_ICONEXCLAMATION | MB_YESNOCANCEL);
+		switch(out){
+		case IDYES: {
+			LPWSTR out = WinFileDialog(SAVE_SSF);
+			if (out[0] >= '0' && out[0] <= '~') {
+				char* dir = malloc(sizeof(char) * (lstrlenW(out) + 5));
+				wcstombs(dir, out, lstrlenW(out));
+				int lendir = strlen(dir);
+				if (dir[lendir - 4] != '.' && dir[lendir - 3] != 's' && dir[lendir - 2] != 's' && dir[lendir - 1] != 'f') {
+					d("Masuk");
+					strcat(dir, ".ssf");
+				}
+				SEQ.FileName = dir;
+				if (!SaveSeqFile(dir)) e(hWnd, "Save Failed");
+				break;
+			}
+			else return FALSE;
+		}
+		case IDNO: {
+			while (SEQ.Count != 0) {
+				DeleteSeqFile(SEQ.Head);
+				LIST_DELETE(0);
+			}
+			dienub(hWnd);
+			return TRUE;
+		}
+		case IDCANCEL : return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+BOOL ReadSeqFile(char* dir) {
+	FILE* seqfile = fopen(dir, "rb");
+	int seqCount = 0;
+	fread(&seqCount, sizeof(int), 1, seqfile);
+	HSEQ* prev = SEQ.Head = NULL;
+	d(FCH("Masuk %s | %d",dir,seqCount));
+	for (int a = 0; a < seqCount; a++) {
+		HSEQ* thisseq = malloc(sizeof(HSEQ));
+		fread(thisseq->data, sizeof(int), 9, seqfile);
+		int len = 0;
+		fread(&len, sizeof(int), 1, seqfile);
+		d(FCH("%d %d || len : %d", thisseq->data[0], thisseq->data[1],len));
+		if (len > 0) {
+			thisseq->bitmapptr = malloc(sizeof(char) * len + 1);
+			fread(thisseq->bitmapptr, sizeof(char), len + 1, seqfile);
+			d(thisseq->bitmapptr);
+		}
+		fread(&len, sizeof(int), 1, seqfile);
+		if (len > 0) {
+			thisseq->color = malloc(sizeof(char) * len + 1);
+			fread(thisseq->color, sizeof(char), len + 1, seqfile);
+		}
+		if (a == 0) {
+			SEQ.Head = thisseq;
+			thisseq->prev = NULL;
+			thisseq->next = NULL;
+		}
+		else {
+			prev->next = thisseq;
+			thisseq->prev = prev;
+			thisseq->next = NULL;
+			SEQ.Tail = thisseq;
+		}
+		InsertList(thisseq, a);
+		prev = thisseq;
+	}
+	fclose(seqfile);
+	return TRUE;
+}
+
+void DoNothing(char* ch) {
+	return;
+}
 
 #endif // !_BACKEND_H
 

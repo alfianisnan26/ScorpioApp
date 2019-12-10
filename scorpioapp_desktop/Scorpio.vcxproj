@@ -197,6 +197,12 @@
     <ResourceCompile Include="Scorpio.rc" />
     <ResourceCompile Include="version.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="resources\Product Sans Bold Italic.ttf" />
+    <Font Include="resources\Product Sans Bold.ttf" />
+    <Font Include="resources\Product Sans Italic.ttf" />
+    <Font Include="resources\Product Sans Regular.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

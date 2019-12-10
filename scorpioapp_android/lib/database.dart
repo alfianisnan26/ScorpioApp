@@ -26,20 +26,10 @@ bool serverstate = false;
 var colorScreenContext;
 String colorScreen = "#000000";
 Post globalret;
-int offset;
-
-Future<void> updateOffset() async{
-  var out = await http.get("https://showcase.linx.twenty57.net:8081/UnixTime/tounix?date=now");
-  var ms = (new DateTime.now()).millisecondsSinceEpoch;
-  int s = ((ms / 1000).round());
-  offset = int.parse(out.body) - s;
-  print("out ${int.parse(out.body)} | s $s offset $offset");
-  return;
-}
 
 int _t() {
   var ms = (new DateTime.now()).millisecondsSinceEpoch;
-  return (ms / 1000).round() + offset;
+  return (ms / 1000).round();
 }
 
 void _setColor(int delay, var color) async {
@@ -87,7 +77,6 @@ void fetchServerState(var server) async {
       if (resp.state != serverstate) {
         serverstate = resp.state;
         if (resp.state == true) {
-          await updateOffset();
           Navigator.push(md.currentcontext, SizeRoute(page: ColorScreen()));
         } else if (resp.state == false) {
           Navigator.pop(md.currentcontext);

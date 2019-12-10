@@ -127,4 +127,18 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="resources\Product Sans Bold Italic.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="resources\Product Sans Bold.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="resources\Product Sans Italic.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+    <Font Include="resources\Product Sans Regular.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
+  </ItemGroup>
 </Project>

@@ -27,7 +27,7 @@ INT_PTR CALLBACK About(STD_PARAM_PROC)
 			"application development on the Android and Web plat-\n"
 			"forms uses Google's Flutter.\n\n"
 			"This application is suitable for forming large group con-\n"
-			"figurations, making beautifuland uniformly controlled\n"
+			"figurations, making beautifu land uniformly controlled\n"
 			"formations in a desktop server with Real-Time database.\n\n"
 			"do not hesitate to give feedback on us so that our apps\n"
 			"can develop better."
@@ -641,29 +641,6 @@ INT_PTR CALLBACK Proc_CMD_Screen(STD_PARAM_PROC) {
 	return (INT_PTR)TRUE;
 }
 
-void dienub(HWND hWnd) {
-	if (ListIndex == 0 || ListIndex == 1) {
-		EnableWindow(GetDlgItem(hWnd, IDC_MU), FALSE);
-		EnableWindow(GetDlgItem(hWnd, IDC_MD), FALSE);
-	}
-	else if (ListIndex > 1) {
-		int sel = SendMessageA(GetDlgItem(hWnd, IDC_LIST), LB_GETCURSEL, 0, 0);
-		if (sel == 0) {
-			EnableWindow(GetDlgItem(hWnd, IDC_MU), FALSE);
-			EnableWindow(GetDlgItem(hWnd, IDC_MD), TRUE);
-		}
-		else if (sel == ListIndex - 1) {
-			EnableWindow(GetDlgItem(hWnd, IDC_MU), TRUE);
-			EnableWindow(GetDlgItem(hWnd, IDC_MD), FALSE);
-		}
-		else {
-			EnableWindow(GetDlgItem(hWnd, IDC_MU), TRUE);
-			EnableWindow(GetDlgItem(hWnd, IDC_MD), TRUE);
-		}
-	}
-	return;
-}
-
 INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
@@ -811,14 +788,14 @@ INT_PTR CALLBACK Proc_CMD_Parent(STD_PARAM_PROC) {
 				else if (transition == 0) transdly = 0;
 				if (form == 0) {
 					formprop = SendMessage(GetDlgItem(hWndGlobal[IDW_FORM_BARS], IDC_COMBO1), CB_GETCURSEL, 0, 0);
-					char* path = malloc(sizeof(char) * 8);
-					GetDlgItemTextA(hWndGlobal[IDW_CMD_SCREEN], IDC_EDIT2, path, 8);
+					char* path = malloc(sizeof(char) * 16);
+					GetDlgItemTextA(hWndGlobal[IDW_CMD_SCREEN], IDC_EDIT2, path, 16);
 					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_COLOR, path, EOVA);
 					free(path);
 				}
 				else if (form == 1) {
-					char* path = malloc(sizeof(char) * 256);
-					int size = GetDlgItemTextA(hWndGlobal[IDW_FORM_IMAGE1], IDC_NAME, path, 256);
+					char* path = malloc(sizeof(char) * 516);
+					int size = GetDlgItemTextA(hWndGlobal[IDW_FORM_IMAGE1], IDC_NAME, path, 516);
 					path = (char*)realloc(path, sizeof(char) * size);
 					AddSeqFile(SEQTYPE_SCREEN, form, formprop, transition, transdly, transprop1, transprop2, SEQTYPE_SCREEN_IMAGE, path, EOVA);
 					free(path);
@@ -873,6 +850,10 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 		return (INT_PTR)TRUE;
 	}
 	case WM_INITDIALOG: {
+#ifndef DEBUG
+		ShowWindow(GetDlgItem(hWnd, IDC_CHECK), SW_HIDE);
+#endif // !DEBUG
+
 		hWndGlobal[IDW_CMD_PAR] = CreateDialog(hInst, MAKEINTRESOURCE(IDD_ADD_CMD_PARENT), hWnd, Proc_CMD_Parent);
 		hWndGlobal[IDW_COMBO_SEQ1] = GetDlgItem(hWndGlobal[IDW_CMD_PAR], IDC_COMBO2);
 		SendMessage(hWndGlobal[IDW_COMBO_SEQ1], CB_ADDSTRING, 0, (LPARAM)L"Loop");
@@ -885,31 +866,56 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_MU: {//UP BUTTON PRESSED
-			
+			SeqMoveUp(hWnd);
 			break;
 		}
 		case IDC_MD: {//DOWN BUTTON PRESSED
+			SeqMoveDown(hWnd);
 			break;
 		}
+#ifdef DEBUG
+		case IDC_CHECK: {
+			HSEQ* rec = GetSeqFromIndex(SendMessageA(GetDlgItem(hWnd, IDC_LIST), LB_GETCURSEL, 0, 0));
+			if (rec == NULL) d("No HSEQ Record");
+			else {
+				d(FCH("Prev\t: %s\nThis\t: %s\nNext\t: %s", (rec->prev == NULL) ? "NULL" : seqch(rec->prev), seqch(rec), (rec->next == NULL) ? "NULL" : seqch(rec->next)));
+			}
+			break;
+		}
+#endif
 		case IDC_CLOSE: {
 			if(IsWindowVisible(hWndGlobal[IDW_CMD_PAR]))ShowWindow(hWndGlobal[IDW_CMD_PAR], SW_HIDE);
 			EndDialog(hWnd, LOWORD(wParam));
 			break;
 		}
+		case IDC_NEW: {
+			if (AskForSave(hWnd)) SEQ.Head = NULL;
+			break;
+		}
 		case IDC_SAVE: {
-			char* buf = (char*)calloc(sizeof(char), 516);
-			char* out = WinFileDialog(SAVE_SSF);
-			if (out == NULL) break;
-			wcstombs(buf, out, 516);
-;			out = FCH("%s.ssf", buf);
-			FILE* fp = fopen(buf,"wb");
-			HSEQ* data = SEQ.Head;
-			for (int a = 0; a < SEQ.Count; a++) {
-				//EDITBOOKMARK
+			if (SEQ.Count == 0) {
+				e(hWnd,"Nothing can be save");
+				break;
 			}
-			fclose(fp);
-			free(buf);
-			free(out);
+			if (SEQ.FileName == NULL) {
+				LPWSTR out = WinFileDialog(SAVE_SSF);
+				if (out[0] >= '0' && out[0] <= '~') {
+					char* dir = malloc(sizeof(char) * (lstrlenW(out) + 5));
+					wcstombs(dir, out, lstrlenW(out));
+					int lendir = strlen(dir);
+					if (dir[lendir - 4] != '.' && dir[lendir - 3] != 's' && dir[lendir - 2] != 's' && dir[lendir - 1] != 'f') {
+						d("Masuk");
+						strcat(dir, ".ssf");
+					}
+					SEQ.FileName = dir;
+					if (!SaveSeqFile(dir)) e(hWnd, "Save Failed");
+					break;
+				}
+			}
+			else {
+				if(!SaveSeqFile(SEQ.FileName)) e(hWnd, "Save Failed");
+				break;
+			}
 			break;
 		}
 		case IDC_ADD: {
@@ -919,47 +925,59 @@ INT_PTR CALLBACK Proc_Sequencer(STD_PARAM_PROC) {
 			break;
 		}
 		case IDC_CLEAR: {
-			if (SEQ.Count == 0 || ListIndex == 0) {
+			if (SEQ.Count == 0) {
 				MessageBoxA(hWndGlobal[IDW_MAINW], "Nothing can be delete", "Error", MB_ICONERROR | MB_OK);
 				break;
 			}
-			HSEQ* cur = SEQ.Head;
-			HSEQ* prev = NULL;
-			HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
-			for (int a = 0; a < SEQ.Count; a++) {
-				SendMessage(hlist, LB_DELETESTRING, (WPARAM)a, 0);
-				prev = cur;
-				cur = cur->next;
-				free(prev);
+			while (SEQ.Count != 0) {
+				DeleteSeqFile(SEQ.Head);
+				LIST_DELETE(0);
 			}
-			free(cur);
-			SendMessage(hlist, LB_DELETESTRING, (WPARAM)0, 0);
-			SEQ.Head = NULL;
-			SEQ.Tail = NULL;
-			ListIndex = 0;
-			SEQ.Count = 0;
 			dienub(hWnd);
 			break;
 		}
 		case IDC_DELETE: {
-			if (SEQ.Count == 0 || ListIndex == 0) {
-				MessageBoxA(hWndGlobal[IDW_MAINW], "Nothing can be delete", "Error", MB_ICONERROR | MB_OK);
+			int index = LIST_CURSEL;
+			if (index == -1 || SEQ.Count == 0) {
+				e(hWnd, "Nothing can be delete");
 				break;
 			}
-			HWND hlist = GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST);
-			int index = SendMessage(hlist, LB_GETCURSEL, 0, 0);
-			SendMessage(hlist, LB_DELETESTRING, (WPARAM)index, 0);
-			index = DeleteSeqFile(index);
-			if (index >= 0) {
-				HSEQ* cur = SEQ.Head;
-				for (int a = 0; a < SEQ.Count; a++) {
-					if (cur->data[1] == index) index = a;
-					cur = cur->next;
-				}
-				DeleteSeqFile(index);
-				SendMessage(hlist, LB_DELETESTRING, (WPARAM)index, 0);
+			HSEQ* cur = GetSeqFromIndex(index);
+			if (cur == NULL) {
+				e(hWnd, "No HSEQ File, please contact the developer");
 			}
-			dienub(hWnd);
+			else {
+				d(seqch(cur));
+				if (cur->data[0] == SEQTYPE_LOOP || cur->data[0] == SEQTYPE_LOOPEND) {
+					if (cur->data[0] == SEQTYPE_LOOP) d("Loop Start");
+					else d("Loop End");
+					int loopindex = index;
+					HSEQ* loop = GetLoopFriend(cur,&loopindex);
+					d(FCH("%d", loopindex));
+					if (index > loopindex) {
+						DeleteSeqFile(cur);
+						LIST_DELETE(index);
+						DeleteSeqFile(loop);
+						LIST_DELETE(loopindex);
+					}
+					else {
+						DeleteSeqFile(loop);
+						LIST_DELETE(loopindex);
+						DeleteSeqFile(cur);
+						LIST_DELETE(index);
+					}
+				}
+				else {
+					if (DeleteSeqFile(cur)) {
+						LIST_DELETE(index);
+						d("Delete Success");
+					}
+					else {
+						e(hWnd, "Cannot Delete HSEQ File, please contact the developer");
+					}
+				}
+				dienub(hWnd);
+			}
 			break;
 		}
 		}
@@ -1082,11 +1100,64 @@ LRESULT CALLBACK WndProc(STD_PARAM_PROC){
 		switch (wmId)
 		{
 		case ID_SEQUENCE_OPEN: {
-			WinFileDialog(OPEN_SSF);
+			LPWSTR out = WinFileDialog(OPEN_SSF);
+			if (out[0] >= '0' && out[0] <= '~') {
+				if (!AskForSave(hWnd)) break;
+				char* dir = malloc(sizeof(char) * lstrlenW(out));
+				wcstombs(dir, out, lstrlenW(out));
+				ReadSeqFile(dir, hWnd);
+				SEQ.FileName = dir;
+			}
+			break;
+		}
+		case ID_SEQUENCE_NEW: {
+			if(AskForSave(hWnd)) SEQ.Head = NULL;
+			break;
+		}
+		case ID_SEQUENCER_SAVEAS: {
+			if (SEQ.Count == 0) {
+				e(hWnd, "Nothing can be save");
+				break;
+			}
+			LPWSTR out = WinFileDialog(SAVE_SSF);
+			if (out[0] >= '0' && out[0] <= '~') {
+				char* dir = malloc(sizeof(char) * (lstrlenW(out) + 5));
+				wcstombs(dir, out, lstrlenW(out));
+				int lendir = strlen(dir);
+				if (dir[lendir - 4] != '.' && dir[lendir - 3] != 's' && dir[lendir - 2] != 's' && dir[lendir - 1] != 'f') {
+					d("Masuk");
+					strcat(dir, ".ssf");
+				}
+				SEQ.FileName = dir;
+				if (!SaveSeqFile(dir)) e(hWnd, "Save Failed");
+				break;
+			}
 			break;
 		}
 		case ID_SEQUENCE_SAVE: {
-			WinFileDialog(SAVE_SSF);
+			if (SEQ.Count == 0) {
+				e(hWnd, "Nothing can be save");
+				break;
+			}
+			if (SEQ.FileName == NULL) {
+				LPWSTR out = WinFileDialog(SAVE_SSF);
+				if (out[0] >= '0' && out[0] <= '~') {
+					char* dir = malloc(sizeof(char) * (lstrlenW(out) + 5));
+					wcstombs(dir, out, lstrlenW(out));
+					int lendir = strlen(dir);
+					if (dir[lendir - 4] != '.' && dir[lendir - 3] != 's' && dir[lendir - 2] != 's' && dir[lendir - 1] != 'f') {
+						d("Masuk");
+						strcat(dir, ".ssf");
+					}
+					SEQ.FileName = dir;
+					if (!SaveSeqFile(dir)) e(hWnd, "Save Failed");
+					break;
+				}
+			}
+			else {
+				if (!SaveSeqFile(SEQ.FileName)) e(hWnd, "Save Failed");
+				break;
+			}
 			break;
 		}
 		case IDM_ABOUT:
@@ -1169,7 +1240,7 @@ LRESULT CALLBACK WndProc(STD_PARAM_PROC){
 		case ID_DCLIENT: system(FCH("start https://%s", STD_LINK));
 			break;
 		case IDM_EXIT:
-			FreeSession();
+			dispose();
 			Sleep(1000);
 			PostQuitMessage(0);
 			break;
@@ -1186,7 +1257,7 @@ LRESULT CALLBACK WndProc(STD_PARAM_PROC){
 	}
 	break;
 	case WM_DESTROY:
-		FreeSession();
+		dispose();
 		Sleep(1000);
 		PostQuitMessage(0);
 		break;

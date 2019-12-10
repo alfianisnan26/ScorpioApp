@@ -123,7 +123,6 @@ class _JoinScreen extends State<JoinScreen> {
     }
   }
 
-  bool torch = false;
   @override
   Widget build(BuildContext context) {
     currentcontext = context;
@@ -449,7 +448,7 @@ Future<void> _dlc(var context) async {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                Text("Windows Server (.zip 700 KB)"),
+                Text("Windows Server (.zip 14.5 MB)"),
                 Icon(FontAwesomeIcons.windows),
               ],),
               onPressed: () => _launchURL("https://scorp-io.web.app/assets/dlc/Scorpio.zip"),

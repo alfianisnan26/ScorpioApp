@@ -35,6 +35,7 @@ LONG BitmapWidth, BitmapHeight;
 
 COLORREF acrCustClr[16];
 WNDPROC StaticWndProc = NULL;
+BOOL disposestate = FALSE;
 
 //Sequence Struct:
 typedef struct seqfile {
@@ -49,6 +50,7 @@ typedef struct seq_h {
 	HSEQ* Head;
 	HSEQ* Tail;
 	int Count;
+	char* FileName;
 }SEQH;
 
 SEQH SEQ;
@@ -85,6 +87,8 @@ SEQH SEQ;
 #define WinHTTPFlag2 INTERNET_DEFAULT_HTTPS_PORT, 0
 #define WinHTTPFlag3 NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE
 #define WM_LOADING_DESTROY 0xF2F6
+#define LIST_CURSEL SendMessageA(GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST), LB_GETCURSEL, 0, 0)
+#define LIST_DELETE(index) SendMessageA(GetDlgItem(hWndGlobal[IDW_SEQUENCER], IDC_LIST), LB_DELETESTRING, index, 0)
 
 //WINDOW GLOBAL ID
 typedef enum {
@@ -127,7 +131,6 @@ typedef struct server_data {
 	int max_client;
 	BOOL state;
 	LPWSTR server_name;
-	int offset;
 }HSERVER;
 
 typedef struct h_text {
@@ -140,6 +143,21 @@ typedef struct h_text {
 	UINT  Uformat;
 	HWND hTWnd;
 }HTEXT;
+
+typedef struct client_data {
+	int UID; //This User ID
+	int LID; //Left User ID
+	int RID; //Right User ID
+	int FID; //Front User ID
+	int BID; //Back User ID
+
+	HSEQ SEQ; //This User Sequential Data
+
+	struct client_data* PLID; //Pointer to Left client_data
+	struct client_data* PRID; //Pointer to Right client_data
+	struct client_data* PFID; //Pointer to Front client_data
+	struct cleint_data* PBID; //Pointer to Back client_data
+}CDATA;
 
 HTEXT hText_G[32] = { 0 };
 int hText_Count = 0;
@@ -165,8 +183,14 @@ HTTP http_setColor = NULL;
 HTTP http_setTorch = NULL;
 HTTP unixTime = NULL;
 
-//DEBUG
-#define _debug(ch) MessageBoxA(hWndGlobal[IDW_MAINW], ch, "Debug", MB_OK)
+//MESSAGE
+#ifdef DEBUG
+	#define d(ch) MessageBoxW(hWndGlobal[IDW_MAINW], L(ch), L"Debug", MB_OK)
+#else
+	#define d(ch) DoNothing(ch)
+#endif
+
+#define e(hWnd, ch) MessageBoxA(hWnd, ch, "Error", MB_OK | MB_ICONERROR)
 
 
 #endif // !1

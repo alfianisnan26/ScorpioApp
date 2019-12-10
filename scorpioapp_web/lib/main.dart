@@ -153,7 +153,7 @@ class _JoinScreen extends State<JoinScreen> {
                   onTap: () => _dlc(context)),
               SpeedDialChild(
                 backgroundColor: primCol,
-                child: Icon(Icons.book),
+                child: Icon(Icons.code),
                 label: "Documentation",
                 onTap: () => js.context.callMethod("open", [mylink]),
               ),
@@ -394,7 +394,7 @@ class AboutPage extends StatelessWidget {
                       "User can download from our website.\n\n"
                       "Scorp.io uses Firebase's Real-Time Database by Google, "
                       "application development on the Android and Web platforms uses Google's Flutter.\n\n"
-                      "This application is suitable for forming large group configurations, making beautifuland uniformly controlled "
+                      "This application is suitable for forming large group configurations, making beautiful and uniformly controlled "
                       "formations in a desktop server with Real-Time database.\n\n"
                       "Do not hesitate to give feedback on us so that our apps "
                       "can develop better.",
@@ -418,7 +418,7 @@ Future<void> _dlc(var context) async {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                Text("Windows Server (.zip 700 KB)"),
+                Text("Windows Server (.zip 14.5 MB)"),
                 Icon(FontAwesomeIcons.windows),
               ],),
               onPressed: () => js.context.callMethod("open",
