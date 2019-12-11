@@ -6,7 +6,7 @@ Proyek Akhir Proglan UTS
 - Dibuat    	: Bulan November - Desember 2019
 - Kelompok  	:
 	- Alfian Badrul Isnan | 1806148643
-	- Idham Ramadito | 1806200293
+	- Idham Ramadito      | 1806200293
 ## Deskripsi
 Scorp.io merupakan aplikasi multiplatform berbasis Windows untuk server, Android dan Progressive Web Application (PWA) untuk client.
 Fungsi utama dari dibentuknya aplikasi ini adalah untuk membentuk sebuah rangkaian “konstelasi” dari perangkat seluler untuk membentuk sebuah formasi tertentu yang ditunjukan oleh warna pada layar dan lampu flash (khusus aplikasi android) yang dikontrol melalui satu sumber server.
