@@ -18,6 +18,9 @@ int clientid;
 var serverid;
 bool clientState = false;
 bool serverstate = false;
+int blink = 0;
+bool blinkState = false;
+int blinkstart =0;
 var colorScreenContext;
 String colorScreen = "#000000";
 Post globalret;
@@ -66,6 +69,17 @@ void fetchServerState(var server) async {
         }
       }
       if(resp.color.value!=colorScreen) _setColor(resp.color.delay, resp.color.value);
+      if(resp.blink.delay != blink){
+        blink = resp.blink.delay;
+        if(blink == 0){
+          blinkstart = 0;
+          blinkState = false;
+        }
+        else{
+          blinkstart=resp.blink.start;
+          blinkState = true;
+        }
+      }
     }
   }
   return;
@@ -127,6 +141,15 @@ class ColorData{
   }
 }
 
+class BlinkData{
+  final int start;
+  final int delay;
+  BlinkData({this.delay,this.start});
+  factory BlinkData.fromJson(Map<String,dynamic> json){
+    return BlinkData(delay: json['Delay'],start: json['Start']);
+  }
+}
+
 class TorchData{
   final bool value;
   final int delay;
@@ -138,11 +161,12 @@ class TorchData{
 
 class ScreenVal {
   final bool state;
+  final BlinkData blink;
   final ColorData color;
   final TorchData torch;
-  ScreenVal({this.state, this.color,this.torch});
+  ScreenVal({this.state, this.color,this.torch,this.blink});
   factory ScreenVal.fromJson(Map<String, dynamic> json) {
-    return ScreenVal(state: json['State'], color: ColorData.fromJson(json['Color']), torch: TorchData.fromJson(json['Torch']));
+    return ScreenVal(state: json['State'], color: ColorData.fromJson(json['Color']), torch: TorchData.fromJson(json['Torch']), blink: BlinkData.fromJson(json['Blink']));
   }
 }
 
@@ -173,11 +197,13 @@ class ColorScreen extends StatefulWidget {
 class _ColorScreen extends State<ColorScreen> {
   String screenColor;
   Timer _timer;
+  int tblink;
   bool init;
   final time = Duration(milliseconds: 500);
 
   @override
   void initState() {
+    tblink = -1;
     init = false;
     super.initState();
     screenColor = colorScreen;
@@ -185,9 +211,45 @@ class _ColorScreen extends State<ColorScreen> {
         Duration(milliseconds: 1), (Timer t) => updateColor(colorScreen));
   }
 
+  bool blinkS = false;
+  bool blinkSP = false;
+  int blinkD = 0;
   void updateColor(var color) {
-    init = true;
-    if (color != screenColor) {
+    if(blink > 100 && blinkState == true){
+      init = false;
+      int mse = DateTime.now().millisecondsSinceEpoch;
+      if(blinkstart<mse/1000){
+        if(blinkSP==false){
+          blinkD = mse;
+          blinkSP=true;
+        }
+        if(mse-blinkD>blink){
+          if(blinkS==true){
+            setState(() {
+              screenColor = color;
+            });
+          }else{
+            setState(() {
+              screenColor = "#000000";
+            });
+          }
+          blinkD=mse;
+          blinkS=!blinkS;
+        }
+      }
+    }
+    else if(blink==0 && blinkState==false){
+      tblink=0;
+      init=true;
+      if(blinkS==true){
+         setState(() {
+          screenColor = color;
+        });
+      }
+      blinkSP = false;
+      blinkS =false;
+    }
+    if (color != screenColor && blinkState==false) {
       setState(() {
         screenColor = color;
       });

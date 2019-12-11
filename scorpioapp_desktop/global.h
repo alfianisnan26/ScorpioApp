@@ -156,7 +156,8 @@ typedef struct client_data {
 	struct client_data* PLID; //Pointer to Left client_data
 	struct client_data* PRID; //Pointer to Right client_data
 	struct client_data* PFID; //Pointer to Front client_data
-	struct cleint_data* PBID; //Pointer to Back client_data
+	struct client_data* PBID; //Pointer to Back client_data
+	struct client_data* next;
 }CDATA;
 
 HTEXT hText_G[32] = { 0 };

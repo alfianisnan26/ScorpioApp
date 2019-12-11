@@ -5,6 +5,7 @@
 #define VER_VER_DEBUG                   0
 #define IDC_MYICON                      2
 #define MAJOR_VERSION                   2
+#define IDC_BLINKSLIDE                  2
 #define BUILD_INCREMENT                 10
 #define MINOR_VERSION                   26
 #define BUILD_DATE                      27
@@ -83,11 +84,16 @@
 #define IDC_FREE                        1079
 #define IDC_COLOR                       1080
 #define IDC_TORCH                       1081
+#define IDC_UPDATE                      1082
 #define IDC_STATIC1                     1090
 #define IDC_STATIC4                     1091
 #define IDC_PING                        1092
 #define IDC_SLIDER_PING                 1093
 #define IDC_CHECK                       1095
+#define IDC_BLINKVAL                    1095
+#define IDC_BLINKVAL2                   1096
+#define IDC_LIST2                       1098
+#define IDC_LBUSER                      1098
 #define ID_HELP_DOWNLOADCLIENT          32771
 #define ID_FILE_OPENSEQUENCE            32772
 #define ID_FILE_EXIT                    32773
@@ -127,7 +133,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        177
 #define _APS_NEXT_COMMAND_VALUE         32801
-#define _APS_NEXT_CONTROL_VALUE         1096
+#define _APS_NEXT_CONTROL_VALUE         1099
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

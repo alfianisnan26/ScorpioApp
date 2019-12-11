@@ -21,6 +21,10 @@ typedef enum {
 	OPEN_BITMAP
 }OnDdatae;
 
+void DoNothing(char* ch) {
+	return;
+}
+
 wchar_t* L(const char* charArray)
 {
 	wchar_t* wString = malloc(4096);
@@ -157,12 +161,15 @@ LPWSTR WinFileDialog(int state) {
 	return ofn.lpstrFile;
 }
 
+char* UpdateUser(char* json) {
+
+	return json;
+}
+
 DWORD WINAPI thUpdateConst() {
 	while (IsWindowVisible(hWndGlobal[IDW_CONSTELLATION])) {
-		Sleep(10);
-		char* r = http(http_thUpdate, 0);
-		SetWindowText(GetDlgItem(hWndGlobal[IDW_CONSTELLATION], IDC_EDIT1), L(r));
-		free(r);
+		Sleep(1000);
+		free(UpdateUser(http(http_thUpdate, 0)));
 	}
 	return;
 }
@@ -246,6 +253,9 @@ BOOL inetCheck(HWND h) {
 								"\"Delay\":0},"
 							"\"Color\":{"
 								"\"Value\":\"#000000\","
+								"\"Delay\":0},"
+							"\"Blink\":{"
+								"\"Start\":0,"
 								"\"Delay\":0}"
 							"}"
 						"}",
@@ -751,7 +761,7 @@ int _setColor(CHOOSECOLOR cc, int delay) {
 	if (delay != 0)delay += time(NULL);
 	pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Color.json", hServ.server_id), PORT_HTTPS,
 		FCH("{\"Value\":\"%s\","
-			"\"Delay\":%d}", FCH("#%02x%02x%02x", GetRValue(cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)),delay), hServ.server_id);
+			"\"Delay\":%d}", FCH("#%02x%02x%02x", GetRValue(cc.rgbResult), GetGValue(cc.rgbResult), GetBValue(cc.rgbResult)),delay));
 	return delay;
 }
 
@@ -759,7 +769,14 @@ int _setTorch(BOOL state, int delay) {
 	if (delay != 0)delay += time(NULL);
 	pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Torch.json", hServ.server_id), PORT_HTTPS,
 		FCH("{\"Value\":%s,"
-			"\"Delay\":%d}", (torch == TRUE) ? "true" : "false", delay), hServ.server_id);
+			"\"Delay\":%d}", (torch == TRUE) ? "true" : "false", delay));
+	return delay;
+}
+
+int _setBlink(int delay, int start_offset) {
+	pokeHTTP(PUT, DB_DOMAIN, FCH("/ServerID/%d/Global/Blink.json", hServ.server_id), PORT_HTTPS,
+		FCH("{\"Delay\":%d,"
+			"\"Start\":%d}", delay, time(NULL) + start_offset));
 	return delay;
 }
 
@@ -1005,10 +1022,6 @@ BOOL ReadSeqFile(char* dir) {
 	}
 	fclose(seqfile);
 	return TRUE;
-}
-
-void DoNothing(char* ch) {
-	return;
 }
 
 #endif // !_BACKEND_H

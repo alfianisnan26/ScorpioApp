@@ -73,6 +73,8 @@ INT_PTR CALLBACK Proc_Loading(STD_PARAM_PROC) {
 	return (INT_PTR)TRUE;
 }
 
+int blink_delay = 0;
+int blink_delay_dump = 0;
 int ping_delay = 0;
 int ping_delay_dump = 0;
 INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
@@ -90,6 +92,9 @@ INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
 		else updateHTTP(http_thUpdate, GET, FCH("/ServerID/%d/User.json", hServ.server_id));
 		SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_SETRANGEMIN, FALSE, 0);
 		SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_SETRANGEMAX, FALSE, 10);
+		SendMessageA(GetDlgItem(hWnd, IDC_BLINKSLIDE), TBM_SETRANGEMIN, FALSE, 0);
+		SendMessageA(GetDlgItem(hWnd, IDC_BLINKSLIDE), TBM_SETRANGEMAX, FALSE, 20);
+		SetDlgItemTextA(hWnd, IDC_BLINKVAL, FCH("%d ms", blink_delay));
 		return (INT_PTR)TRUE;
 	}
 	case WM_SHOWWINDOW: {
@@ -97,10 +102,18 @@ INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
 		if(ping_delay==0) SetDlgItemTextA(hWnd, IDC_PING, "async");
 		else SetDlgItemTextA(hWnd, IDC_PING, FCH("%d s", ping_delay));
 		SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_SETPOS, TRUE, ping_delay);
+		SendMessageA(GetDlgItem(hWnd, IDC_BLINKSLIDE), TBM_SETPOS, TRUE, blink_delay);
+		SetWindowTextA(GetDlgItem(hWnd, IDC_BLINKVAL), "Static");
 		return (INT_PTR)TRUE;
 	}
 	case WM_HSCROLL: {
 		ping_delay_dump = SendMessageA(GetDlgItem(hWnd, IDC_SLIDER_PING), TBM_GETPOS, 0, 0);
+		blink_delay_dump = (SendMessageA(GetDlgItem(hWnd, IDC_BLINKSLIDE), TBM_GETPOS, 0, 0))*500;
+		if (blink_delay_dump != blink_delay) {
+			blink_delay = blink_delay_dump;
+			if(blink_delay == 0)SetDlgItemTextA(hWnd, IDC_BLINKVAL, "Static");
+			else SetDlgItemTextA(hWnd, IDC_BLINKVAL, FCH("%d ms", blink_delay));
+		}
 		if (ping_delay_dump != ping_delay) {
 			ping_delay = ping_delay_dump;
 			if (ping_delay == 0) SetDlgItemTextA(hWnd, IDC_PING, "async");
@@ -110,6 +123,10 @@ INT_PTR CALLBACK Proc_Const(STD_PARAM_PROC) {
 	}
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
+		case IDC_UPDATE: {
+			_setBlink(blink_delay, ping_delay);
+			break;
+		}
 		case IDC_BUTTON1: {
 			EndDialog(hWnd, LOWORD(wParam));
 			break;

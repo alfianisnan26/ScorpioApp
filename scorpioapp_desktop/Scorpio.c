@@ -4,9 +4,9 @@
 #define APSTUDIO_READONLY_SYMBOLS
 #define _CRT_SECURE_NO_WARNINGS
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define _NO_WND_SPLASH
+//#define _NO_WND_SPLASH
 #define _NO_INET_ERROR
-#define DEBUG
+//#define DEBUG
 //#define _DEBUG_FIREBASE
 
 
